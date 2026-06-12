@@ -1,0 +1,154 @@
+[
+    {
+        "id": "ff971451-f04b-421e-b46b-993b445ffe4c",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is this HR chat policy about?",
+        "answer": "The purpose of the HR Chat Policy is to establish rules for professional communication through the HR chat system and ensure confidentiality, accuracy, and compliance with company policies during these interactions. The document also outlines prohibited uses such as sharing sensitive information or using inappropriate language. Additionally, it mentions that violations of this policy may result in disciplinary action according to company guidelines. Lastly, the HR Chat Policy should be reviewed and updated regularly to reflect any changes in processes, policies, chatbot functionality, data protection requirements, or legal obligations.",
+        "sources": [
+            {
+                "chunk_id": "06679343-463e-4905-ad22-fbd1ec0068a0",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 3,
+                "chunk_index": 3,
+                "similarity_score": 0.5683,
+                "distance": 0.43168729543685913
+            },
+            {
+                "chunk_id": "06de0566-e844-4acb-ae48-b6620b65a6be",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": 0.5655,
+                "distance": 0.4344559907913208
+            },
+            {
+                "chunk_id": "25b0c42d-87d7-4ee0-98d9-e77c19140a6d",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 5,
+                "chunk_index": 11,
+                "similarity_score": 0.5219,
+                "distance": 0.4781174659729004
+            }
+        ],
+        "latency_ms": 50050,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T09:10:16.057468"
+    },
+    {
+        "id": "7af01864-743f-47b0-8e69-f21d7929a199",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is this HR chat policy rules?",
+        "answer": "The purpose of the HR Chat Policy is to define communication standards for interactions with the HR chat system and ensure professionalism, confidentiality, accuracy, and compliance in all conversations. The prohibited uses include sharing sensitive information like passwords or making false claims. Violating this policy may lead to disciplinary actions up to legal action.",
+        "sources": [
+            {
+                "chunk_id": "06de0566-e844-4acb-ae48-b6620b65a6be",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": 0.5721,
+                "distance": 0.42789214849472046
+            },
+            {
+                "chunk_id": "06679343-463e-4905-ad22-fbd1ec0068a0",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 3,
+                "chunk_index": 3,
+                "similarity_score": 0.5439,
+                "distance": 0.4560631513595581
+            },
+            {
+                "chunk_id": "25b0c42d-87d7-4ee0-98d9-e77c19140a6d",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 5,
+                "chunk_index": 11,
+                "similarity_score": 0.5049,
+                "distance": 0.4951101541519165
+            }
+        ],
+        "latency_ms": 36483,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T09:11:30.908334"
+    },
+    {
+        "id": "a7a97318-5804-4e11-a7da-45eeb8bc347d",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is the Review Frequency?",
+        "answer": "The review frequency of feedback ratings to improve service quality appears to be every 6-12 months, as mentioned in Source 1 under \"Feedback ratings Service improvement.\" However, this specific detail about how often reviews are conducted isn't explicitly stated within the provided context. It is implied that there should be regular monitoring and review of chat activity for various purposes including service quality assessment which may involve feedback rating evaluations periodically to ensure continuous improvement in HR support services through AI or human interaction, but a specific frequency beyond what Source 1 suggests isn't detailed herein.",
+        "sources": [
+            {
+                "chunk_id": "299285c5-893b-49e1-ae7d-7258119090d4",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 6,
+                "similarity_score": -0.4083,
+                "distance": 1.4083430767059326
+            },
+            {
+                "chunk_id": "7deb9854-145d-4d63-8015-5fde7da7f46b",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 3,
+                "chunk_index": 5,
+                "similarity_score": -0.4929,
+                "distance": 1.4928638935089111
+            },
+            {
+                "chunk_id": "5dfaee52-4bd0-4805-8dc1-e53c9d8d67fa",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 5,
+                "chunk_index": 9,
+                "similarity_score": -0.5551,
+                "distance": 1.5551193952560425
+            }
+        ],
+        "latency_ms": 43821,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T09:14:38.496845"
+    },
+    {
+        "id": "7d55b9a9-e0fa-43fa-a51f-829e761eeefc",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is the Escalation Rules",
+        "answer": "The HR chat system must support escalation to a human HR representative in cases of payroll errors, salary deductions, tax issues, benefits disputes, harassment or discrimination concerns, grievances, disciplinary matters, workplace safety concerns, requests involving confidential documents or identity verification, when the chatbot cannot find a reliable answer, and when an employee asks to speak with HR directly.",
+        "sources": [
+            {
+                "chunk_id": "257abbda-5a23-48ae-88ec-014ec6e75644",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 7,
+                "similarity_score": 0.0172,
+                "distance": 0.9827505350112915
+            },
+            {
+                "chunk_id": "299285c5-893b-49e1-ae7d-7258119090d4",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 6,
+                "similarity_score": -0.1338,
+                "distance": 1.1337666511535645
+            },
+            {
+                "chunk_id": "06679343-463e-4905-ad22-fbd1ec0068a0",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 3,
+                "chunk_index": 3,
+                "similarity_score": -0.3229,
+                "distance": 1.3229475021362305
+            }
+        ],
+        "latency_ms": 40550,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T09:16:33.435753"
+    }
+]

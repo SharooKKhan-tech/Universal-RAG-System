@@ -1,0 +1,13 @@
+[
+    {
+        "id": "c916ff46-6822-4fc0-b7b4-dcbb07efe119",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "file_name": "HR_Chat_Policy.pdf",
+        "file_type": "pdf",
+        "file_path": "uploads\\a08762d6-8d7d-405a-9d94-280b4266da04\\c916ff46-6822-4fc0-b7b4-dcbb07efe119_HR_Chat_Policy.pdf",
+        "text_path": "data\\extracted_text\\c916ff46-6822-4fc0-b7b4-dcbb07efe119.txt",
+        "status": "indexed",
+        "error_message": null,
+        "created_at": "2026-06-12T06:47:55.541882"
+    }
+]
