@@ -124,5 +124,104 @@
         "chunk_index": 13,
         "page_number": 6,
         "created_at": "2026-06-12T07:00:00.607186"
+    },
+    {
+        "id": "5304acb9-3420-4868-ab3b-889be9dde2d3",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "764f4252-d28b-4cfd-be94-f78b7f4705ec",
+        "chunk_text": "--- Page 1 ---\nUniversal RAG Test Corpus - Page 1\n Employee Travel and Expense Policy\nPurpose: This file is part of a sample multi-document project for testing API-key protected RAG upload, indexing,\nsemantic search, chat answers, and source citations.\nOverview\nThis policy describes travel approvals, booking rules, reimbursement requirements, meal limits, and\nexpense claim timelines.\nEmployees must use reasonable judgment and choose cost-effective travel options for business trips.\nTravel Approval\nDomestic travel must be approved by the reporting manager before booking.\nInternational travel must be approved by the department head and finance team before tickets are\npurchased.\nEmergency travel may be approved through email confirmation and regularized after the trip.\nBooking Rules\nEconomy class must be used for domestic flights. Premium travel requires written department-head\napproval.\nHotel bookings should follow the approved city-wise budget limits unless the client or event location",
+        "chunk_index": 0,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:04.682609"
+    },
+    {
+        "id": "03387323-ff86-497b-b9aa-8a29b39ccb50",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "764f4252-d28b-4cfd-be94-f78b7f4705ec",
+        "chunk_text": "avel requires written department-head\napproval.\nHotel bookings should follow the approved city-wise budget limits unless the client or event location\nrequires an exception.\nReimbursement\nExpense claims must be submitted within ten working days after travel completion.\nOriginal bills or digital receipts are required for hotel, flight, taxi, and meal expenses.\nClaims without receipts may be rejected unless finance approves a documented exception.\nExpense Type\nRequired Proof\nFlight or Train\nTicket and invoice\nHotel\nTax invoice and payment receipt\nTaxi or Rideshare\nTrip receipt\nMeals\nBill with date and location\nMeal and Local Transport Limits\nMeal reimbursement is allowed for business travel days only and must follow the company expense\nlimits.\nLocal transport should use standard taxi, rideshare, bus, metro, or approved rental services.",
+        "chunk_index": 1,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:04.682692"
+    },
+    {
+        "id": "212f6f8c-70e1-4494-b836-eaf546c53698",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "73f6b966-f5dd-40ec-ba47-70547de6200e",
+        "chunk_text": "--- Page 1 ---\nUniversal RAG Test Corpus - Page 1\n Product Warranty and Returns Guide\nPurpose: This file is part of a sample multi-document project for testing API-key protected RAG upload, indexing,\nsemantic search, chat answers, and source citations.\nOverview\nThis guide explains product warranty coverage, return eligibility, replacement conditions, refund\ntimelines, and customer support process.\nWarranty and returns are handled according to product category, purchase proof, issue type, and\nusage condition.\nWarranty Coverage\nStandard electronic products include a one-year limited warranty from the date of purchase.\nAccessories such as cables, chargers, and adapters include a six-month limited warranty unless\notherwise mentioned on the invoice.\nWarranty covers manufacturing defects, power failure caused by internal faults, and non-physical\ncomponent malfunction.\nProduct Category\nWarranty Period\nElectronics\nOne year limited warranty\nAccessories\nSix months limited warranty\nReplacement Un",
+        "chunk_index": 0,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:23.234148"
+    },
+    {
+        "id": "8f8b890e-a8b9-41d4-bbfe-98e331b563ab",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "73f6b966-f5dd-40ec-ba47-70547de6200e",
+        "chunk_text": "l\ncomponent malfunction.\nProduct Category\nWarranty Period\nElectronics\nOne year limited warranty\nAccessories\nSix months limited warranty\nReplacement Unit\nRemaining original warranty or ninety days, whichever is longer\nReturn Eligibility\nCustomers may request a return within seven calendar days of delivery if the product is unused,\nundamaged, and includes original packaging.\nOpened products may be eligible for replacement if a verified manufacturing defect is found during\ninspection.\nRefund Timeline\nApproved refunds are initiated within five to seven business days after the returned product passes\ninspection.\nRefunds are sent to the original payment method. Bank processing time may vary by payment\nprovider.\nWarranty Exclusions\nWarranty does not cover physical damage, water damage, unauthorized repair, misuse, normal wear\nand tear, or missing serial numbers.\nProducts without valid purchase proof may be rejected for warranty service.",
+        "chunk_index": 1,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:23.234185"
+    },
+    {
+        "id": "921f46c7-ef72-48fe-80b7-561ce75b4099",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "73f6b966-f5dd-40ec-ba47-70547de6200e",
+        "chunk_text": "g serial numbers.\nProducts without valid purchase proof may be rejected for warranty service.",
+        "chunk_index": 2,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:23.234207"
+    },
+    {
+        "id": "841a00da-09d0-478c-a5c3-d178fddf9c45",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "0d4ecaca-c65b-4b77-beff-e6b38651c3ed",
+        "chunk_text": "--- Page 1 ---\nUniversal RAG Test Corpus - Page 1\n IT Security and Data Protection Policy\nPurpose: This file is part of a sample multi-document project for testing API-key protected RAG upload, indexing,\nsemantic search, chat answers, and source citations.\nOverview\nThis policy defines security practices for account access, passwords, devices, data handling, and\nincident reporting.\nAll employees and contractors must protect company data and follow approved security controls.\nPassword Rules\nPasswords must be at least twelve characters long and must not be reused across personal and\ncompany accounts.\nMulti-factor authentication is mandatory for email, code repositories, cloud platforms, and production\nsystems.\nDevice Security\nCompany laptops must use screen lock, disk encryption, antivirus protection, and operating system\nupdates.\nLost or stolen devices must be reported to IT within one hour of discovery.\nData Classification\nPublic data can be shared externally without restriction. Intern",
+        "chunk_index": 0,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:41.631699"
+    },
+    {
+        "id": "4eb0adae-bba4-425c-a49f-7a55f2e8980c",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "0d4ecaca-c65b-4b77-beff-e6b38651c3ed",
+        "chunk_text": "olen devices must be reported to IT within one hour of discovery.\nData Classification\nPublic data can be shared externally without restriction. Internal data is limited to employees and\napproved contractors.\nConfidential data includes customer information, employee records, contracts, API keys, credentials,\nand financial reports.\nRestricted data must not be copied to personal devices, personal email, public drives, or unapproved\nAI tools.\nClassification\nExamples\nPublic\nMarketing brochures, public website text\nInternal\nTeam notes, internal process documents\nConfidential\nCustomer records, contracts, API keys\nRestricted\nProduction secrets, regulated personal data\nIncident Reporting\nSuspected phishing, unauthorized access, malware, or accidental data exposure must be reported\nimmediately to the IT security team.\nEmployees should not delete evidence or attempt private investigation before reporting a security\nincident.",
+        "chunk_index": 1,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:41.631713"
+    },
+    {
+        "id": "a0483d63-2bba-4955-9550-46a148663097",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "0d4ecaca-c65b-4b77-beff-e6b38651c3ed",
+        "chunk_text": "idence or attempt private investigation before reporting a security\nincident.",
+        "chunk_index": 2,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:55:41.631721"
+    },
+    {
+        "id": "74057130-e00d-4a0b-9785-3a57d702b09e",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "0de3a72f-938a-4523-b89f-ce1027fd2914",
+        "chunk_text": "--- Page 1 ---\nUniversal RAG Test Corpus - Page 1\n HR Leave and Attendance Policy\nPurpose: This file is part of a sample multi-document project for testing API-key protected RAG upload, indexing,\nsemantic search, chat answers, and source citations.\nOverview\nThis policy explains working hours, attendance expectations, leave categories, approval rules, and\ndocumentation requirements for employees.\nEmployees are expected to record attendance accurately every working day. Missing attendance\nrecords must be regularized within three working days.\nWorking Hours\nStandard working hours are 9:30 AM to 6:30 PM from Monday to Friday. A flexible grace period of 15\nminutes is allowed up to three times in a month.\nRepeated late login beyond the grace limit may be marked as half-day leave after manager review.\nLeave Types\nCasual leave can be used for short personal needs and should be requested at least one day in\nadvance whenever possible.\nSick leave can be taken for health reasons. If sick leave exc",
+        "chunk_index": 0,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:56:05.498176"
+    },
+    {
+        "id": "ca5eff8b-e8c0-41cf-8dcb-2dd334c4e6da",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "0de3a72f-938a-4523-b89f-ce1027fd2914",
+        "chunk_text": "rt personal needs and should be requested at least one day in\nadvance whenever possible.\nSick leave can be taken for health reasons. If sick leave exceeds two consecutive working days, a\nmedical certificate may be requested.\nEarned leave must be planned and approved at least seven days before the start date unless an\nexception is approved by HR.\nLeave Type\nSummary\nCasual Leave\nShort personal needs; advance notice preferred.\nSick Leave\nHealth reasons; certificate may be needed after two days.\nEarned Leave\nPlanned leave; seven-day advance approval recommended.\nApproval Rules\nAll leave requests must be submitted through the official HR portal or approved communication\nchannel.\nManagers should approve or reject leave requests within two working days. HR will review policy\nexceptions.\nAttendance Regularization\nEmployees may regularize missed punches, incorrect login times, or approved work-from-home\nattendance within three working days.\nRegularization requests must include a clear reason an",
+        "chunk_index": 1,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:56:05.498211"
+    },
+    {
+        "id": "4b8d673a-15ae-4ab0-a82c-ff53cb01507f",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "document_id": "0de3a72f-938a-4523-b89f-ce1027fd2914",
+        "chunk_text": "unches, incorrect login times, or approved work-from-home\nattendance within three working days.\nRegularization requests must include a clear reason and manager confirmation.",
+        "chunk_index": 2,
+        "page_number": 1,
+        "created_at": "2026-06-12T09:56:05.498231"
     }
 ]

@@ -1,0 +1,18 @@
+[
+    {
+        "id": "5e5f8b96-22ca-4847-99e7-2d7b04d2f982",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "name": "local-development-key",
+        "api_key": "rag_sk_mxe228GUydPmotiJ-5O_OeN1Tyh8IKekl7Rn5pAwe2E",
+        "is_active": true,
+        "created_at": "2026-06-12T09:35:54.093326"
+    },
+    {
+        "id": "3a7a5b2f-3a42-4e02-b7d3-cd09367a4a6e",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "name": "company-knowledge-test-key",
+        "api_key": "rag_sk_w07U-2tXdbS2UBzk4I8E-HTPhuoIEwpqUO3xzQK31Uw",
+        "is_active": true,
+        "created_at": "2026-06-12T09:50:21.892873"
+    }
+]

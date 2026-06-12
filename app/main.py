@@ -5,6 +5,7 @@ from app.api.routes_documents import router as documents_router
 from app.api.routes_chunks import router as chunks_router
 from app.api.routes_vectors import router as vectors_router
 from app.api.routes_chat import router as chat_router
+from app.api.routes_api_keys import router as api_keys_router
 
 app = FastAPI(
     title="Universal RAG System",
@@ -14,6 +15,7 @@ app = FastAPI(
 
 app.include_router(health_router, prefix="/api/v1", tags=["Health"])
 app.include_router(projects_router, prefix="/api/v1", tags=["Projects"])
+app.include_router(api_keys_router, prefix="/api/v1", tags=["API Keys"])
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(chunks_router, prefix="/api/v1", tags=["Chunks"])
 app.include_router(vectors_router, prefix="/api/v1", tags=["Vector Store"])

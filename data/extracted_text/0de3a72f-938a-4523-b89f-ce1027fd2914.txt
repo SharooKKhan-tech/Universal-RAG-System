@@ -1,0 +1,39 @@
+
+--- Page 1 ---
+Universal RAG Test Corpus - Page 1
+ HR Leave and Attendance Policy
+Purpose: This file is part of a sample multi-document project for testing API-key protected RAG upload, indexing,
+semantic search, chat answers, and source citations.
+Overview
+This policy explains working hours, attendance expectations, leave categories, approval rules, and
+documentation requirements for employees.
+Employees are expected to record attendance accurately every working day. Missing attendance
+records must be regularized within three working days.
+Working Hours
+Standard working hours are 9:30 AM to 6:30 PM from Monday to Friday. A flexible grace period of 15
+minutes is allowed up to three times in a month.
+Repeated late login beyond the grace limit may be marked as half-day leave after manager review.
+Leave Types
+Casual leave can be used for short personal needs and should be requested at least one day in
+advance whenever possible.
+Sick leave can be taken for health reasons. If sick leave exceeds two consecutive working days, a
+medical certificate may be requested.
+Earned leave must be planned and approved at least seven days before the start date unless an
+exception is approved by HR.
+Leave Type
+Summary
+Casual Leave
+Short personal needs; advance notice preferred.
+Sick Leave
+Health reasons; certificate may be needed after two days.
+Earned Leave
+Planned leave; seven-day advance approval recommended.
+Approval Rules
+All leave requests must be submitted through the official HR portal or approved communication
+channel.
+Managers should approve or reject leave requests within two working days. HR will review policy
+exceptions.
+Attendance Regularization
+Employees may regularize missed punches, incorrect login times, or approved work-from-home
+attendance within three working days.
+Regularization requests must include a clear reason and manager confirmation.

@@ -1,0 +1,39 @@
+
+--- Page 1 ---
+Universal RAG Test Corpus - Page 1
+ Product Warranty and Returns Guide
+Purpose: This file is part of a sample multi-document project for testing API-key protected RAG upload, indexing,
+semantic search, chat answers, and source citations.
+Overview
+This guide explains product warranty coverage, return eligibility, replacement conditions, refund
+timelines, and customer support process.
+Warranty and returns are handled according to product category, purchase proof, issue type, and
+usage condition.
+Warranty Coverage
+Standard electronic products include a one-year limited warranty from the date of purchase.
+Accessories such as cables, chargers, and adapters include a six-month limited warranty unless
+otherwise mentioned on the invoice.
+Warranty covers manufacturing defects, power failure caused by internal faults, and non-physical
+component malfunction.
+Product Category
+Warranty Period
+Electronics
+One year limited warranty
+Accessories
+Six months limited warranty
+Replacement Unit
+Remaining original warranty or ninety days, whichever is longer
+Return Eligibility
+Customers may request a return within seven calendar days of delivery if the product is unused,
+undamaged, and includes original packaging.
+Opened products may be eligible for replacement if a verified manufacturing defect is found during
+inspection.
+Refund Timeline
+Approved refunds are initiated within five to seven business days after the returned product passes
+inspection.
+Refunds are sent to the original payment method. Bank processing time may vary by payment
+provider.
+Warranty Exclusions
+Warranty does not cover physical damage, water damage, unauthorized repair, misuse, normal wear
+and tear, or missing serial numbers.
+Products without valid purchase proof may be rejected for warranty service.

@@ -43,3 +43,15 @@ class ChatRequest(BaseModel):
     project_id: str
     question: str = Field(..., min_length=2, max_length=1000)
     top_k: int = Field(default=5, ge=1, le=20)
+
+class ApiKeyCreate(BaseModel):
+    name: str = Field(..., min_length=3, max_length=100)
+
+
+class ApiKeyResponse(BaseModel):
+    id: str
+    project_id: str
+    name: str
+    api_key: str
+    is_active: bool
+    created_at: datetime

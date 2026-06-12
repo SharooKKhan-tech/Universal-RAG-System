@@ -150,5 +150,157 @@
         "latency_ms": 40550,
         "model_name": "phi3:mini",
         "created_at": "2026-06-12T09:16:33.435753"
+    },
+    {
+        "id": "df588c73-5248-48e8-a0cf-d12ad09c23a1",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is this rules",
+        "answer": "The escalation rule states that the user should be able to speak directly with an HR representative in cases of payroll errors, harassment concerns, personal emergencies involving confidential documents, or when they ask for direct human interaction. Additionally, if there are issues beyond chatbot capabilities like sensitive employee matters requiring investigation by a manager or security/contact person.",
+        "sources": [
+            {
+                "chunk_id": "06de0566-e844-4acb-ae48-b6620b65a6be",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.4555,
+                "distance": 1.4554733037948608
+            },
+            {
+                "chunk_id": "257abbda-5a23-48ae-88ec-014ec6e75644",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 7,
+                "similarity_score": -0.4695,
+                "distance": 1.4694504737854004
+            },
+            {
+                "chunk_id": "25b0c42d-87d7-4ee0-98d9-e77c19140a6d",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 5,
+                "chunk_index": 11,
+                "similarity_score": -0.5389,
+                "distance": 1.5389182567596436
+            }
+        ],
+        "latency_ms": 49251,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T09:41:52.638346"
+    },
+    {
+        "id": "7a6dead6-e66e-415d-8904-57c0486d7b87",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What are the working hours?",
+        "answer": "Standard working hours are from 9:30 AM to 6:30 PM, Monday to Friday.",
+        "sources": [
+            {
+                "chunk_id": "74057130-e00d-4a0b-9785-3a57d702b09e",
+                "file_name": "HR_Leave_and_Attendance_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.2021,
+                "distance": 1.202104091644287
+            },
+            {
+                "chunk_id": "4b8d673a-15ae-4ab0-a82c-ff53cb01507f",
+                "file_name": "HR_Leave_and_Attendance_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 2,
+                "similarity_score": -0.3304,
+                "distance": 1.3303582668304443
+            },
+            {
+                "chunk_id": "ca5eff8b-e8c0-41cf-8dcb-2dd334c4e6da",
+                "file_name": "HR_Leave_and_Attendance_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 1,
+                "similarity_score": -0.3554,
+                "distance": 1.3553738594055176
+            },
+            {
+                "chunk_id": "5304acb9-3420-4868-ab3b-889be9dde2d3",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.6265,
+                "distance": 1.6265318393707275
+            },
+            {
+                "chunk_id": "03387323-ff86-497b-b9aa-8a29b39ccb50",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 1,
+                "similarity_score": -0.6318,
+                "distance": 1.6317955255508423
+            }
+        ],
+        "latency_ms": 61766,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:02:49.921314"
+    },
+    {
+        "id": "bd025a65-44cc-4b1c-bc4f-89064d244f8c",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What proof is required for travel reimbursement?",
+        "answer": "Original bills or digital receipts are required for hotel, flight, taxi, and meal expenses.",
+        "sources": [
+            {
+                "chunk_id": "03387323-ff86-497b-b9aa-8a29b39ccb50",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 1,
+                "similarity_score": 0.195,
+                "distance": 0.8050169944763184
+            },
+            {
+                "chunk_id": "5304acb9-3420-4868-ab3b-889be9dde2d3",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": 0.042,
+                "distance": 0.9579893350601196
+            }
+        ],
+        "latency_ms": 26187,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:03:50.230208"
+    },
+    {
+        "id": "e44632cb-851a-4291-9616-7bcaf7a8dde6",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "Which documents talk about approval rules?",
+        "answer": "Source 1 and Source 2 both discuss different types of travel-related approvals, but only Source 1 specifically talks about the detailed policies for domestic (reporting manager), international (department head and finance team) travel approval. The emergency travel in Source 1 also requires email confirmation post trip which is a form of approval as well.",
+        "sources": [
+            {
+                "chunk_id": "5304acb9-3420-4868-ab3b-889be9dde2d3",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.2336,
+                "distance": 1.2335786819458008
+            },
+            {
+                "chunk_id": "841a00da-09d0-478c-a5c3-d178fddf9c45",
+                "file_name": "IT_Security_and_Data_Protection_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.5316,
+                "distance": 1.5315890312194824
+            }
+        ],
+        "latency_ms": 34074,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:05:12.321012"
     }
 ]
