@@ -187,3 +187,21 @@ def get_queries_by_project(project_id: str):
         query for query in queries
         if query["project_id"] == project_id
     ]
+
+def delete_queries_by_project(project_id: str):
+    queries = load_queries()
+
+    remaining_queries = [
+        query for query in queries
+        if query["project_id"] != project_id
+    ]
+
+    deleted_count = len(queries) - len(remaining_queries)
+
+    save_queries(remaining_queries)
+
+    return {
+        "message": "Project query history deleted successfully",
+        "project_id": project_id,
+        "deleted_count": deleted_count
+    }

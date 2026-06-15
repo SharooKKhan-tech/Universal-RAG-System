@@ -1,16 +1,5 @@
 [
     {
-        "id": "c916ff46-6822-4fc0-b7b4-dcbb07efe119",
-        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
-        "file_name": "HR_Chat_Policy.pdf",
-        "file_type": "pdf",
-        "file_path": "uploads\\a08762d6-8d7d-405a-9d94-280b4266da04\\c916ff46-6822-4fc0-b7b4-dcbb07efe119_HR_Chat_Policy.pdf",
-        "text_path": "data\\extracted_text\\c916ff46-6822-4fc0-b7b4-dcbb07efe119.txt",
-        "status": "indexed",
-        "error_message": null,
-        "created_at": "2026-06-12T06:47:55.541882"
-    },
-    {
         "id": "764f4252-d28b-4cfd-be94-f78b7f4705ec",
         "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
         "file_name": "Employee_Travel_and_Expense_Policy.pdf",

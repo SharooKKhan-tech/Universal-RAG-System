@@ -118,3 +118,21 @@ def delete_api_key(project_id: str, api_key_id: str):
 
     save_api_keys(updated_api_keys)
     return True
+
+def delete_api_keys_by_project(project_id: str):
+    api_keys = load_api_keys()
+
+    remaining_api_keys = [
+        api_key for api_key in api_keys
+        if api_key["project_id"] != project_id
+    ]
+
+    deleted_count = len(api_keys) - len(remaining_api_keys)
+
+    save_api_keys(remaining_api_keys)
+
+    return {
+        "message": "Project API keys deleted successfully",
+        "project_id": project_id,
+        "deleted_count": deleted_count
+    }
