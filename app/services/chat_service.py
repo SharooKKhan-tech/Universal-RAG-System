@@ -8,6 +8,14 @@ from app.services.vector_service import semantic_search
 from app.generation.prompts import build_rag_prompt
 from app.generation.llm_service import generate_answer_with_ollama
 
+from app.retrieval.confidence import (
+    NO_ANSWER_TEXT,
+    get_top_similarity_score,
+    get_confidence_level,
+    should_return_no_answer_before_llm,
+    is_no_answer_text
+)
+
 DATA_DIR = Path("data")
 QUERIES_FILE = DATA_DIR / "queries.json"
 
@@ -81,21 +89,16 @@ def save_query_record(
     answer: str,
     sources: list,
     latency_ms: int,
-    model_name: str = "phi3:mini"
+    model_name: str = "phi3:mini",
+    status: str = "answered",
+    confidence: str = "medium",
+    top_similarity_score: float | None = None,
+    no_answer_reason: str | None = None
 ):
     queries = load_queries()
 
-    no_answer_text = "I don't have enough information in the uploaded documents to answer this."
-
-    is_no_answer = answer.strip().lower() == no_answer_text.lower()
-
-    similarity_scores = [
-        source.get("similarity_score")
-        for source in sources
-        if source.get("similarity_score") is not None
-    ]
-
-    top_similarity_score = max(similarity_scores) if similarity_scores else None
+    if is_no_answer_text(answer):
+        status = "no_answer"
 
     record = {
         "id": str(uuid4()),
@@ -105,8 +108,10 @@ def save_query_record(
         "sources": sources,
         "source_count": len(sources),
         "top_similarity_score": top_similarity_score,
-        "is_no_answer": is_no_answer,
-        "status": "no_answer" if is_no_answer else "answered",
+        "confidence": confidence,
+        "is_no_answer": status == "no_answer",
+        "status": status,
+        "no_answer_reason": no_answer_reason,
         "latency_ms": latency_ms,
         "model_name": model_name,
         "created_at": datetime.utcnow().isoformat()
@@ -129,27 +134,66 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
 
     retrieved_results = search_response.get("results", [])
 
-    if not retrieved_results:
-        answer = "I don't have enough information in the uploaded documents to answer this."
-        sources = []
+    top_similarity_score = get_top_similarity_score(retrieved_results)
+    confidence = get_confidence_level(top_similarity_score)
 
+    # Case 1: No chunks retrieved
+    if not retrieved_results:
         latency_ms = int((time.time() - start_time) * 1000)
 
         query_record = save_query_record(
             project_id=project_id,
             question=question,
-            answer=answer,
-            sources=sources,
-            latency_ms=latency_ms
+            answer=NO_ANSWER_TEXT,
+            sources=[],
+            latency_ms=latency_ms,
+            status="no_answer",
+            confidence="low",
+            top_similarity_score=None,
+            no_answer_reason="No relevant chunks retrieved"
         )
 
         return {
-            "answer": answer,
-            "sources": sources,
+            "answer": NO_ANSWER_TEXT,
+            "status": "no_answer",
+            "confidence": "low",
+            "top_similarity_score": None,
+            "no_answer_reason": "No relevant chunks retrieved",
+            "sources": [],
             "latency_ms": latency_ms,
+            "model_name": "phi3:mini",
             "query_id": query_record["id"]
         }
 
+    # Case 2: Retrieved chunks are too weak
+    if should_return_no_answer_before_llm(top_similarity_score):
+        latency_ms = int((time.time() - start_time) * 1000)
+
+        query_record = save_query_record(
+            project_id=project_id,
+            question=question,
+            answer=NO_ANSWER_TEXT,
+            sources=[],
+            latency_ms=latency_ms,
+            status="no_answer",
+            confidence=confidence,
+            top_similarity_score=top_similarity_score,
+            no_answer_reason="Top similarity score is below threshold"
+        )
+
+        return {
+            "answer": NO_ANSWER_TEXT,
+            "status": "no_answer",
+            "confidence": confidence,
+            "top_similarity_score": top_similarity_score,
+            "no_answer_reason": "Top similarity score is below threshold",
+            "sources": [],
+            "latency_ms": latency_ms,
+            "model_name": "phi3:mini",
+            "query_id": query_record["id"]
+        }
+
+    # Case 3: Good enough context, generate answer
     context = build_context_from_results(retrieved_results)
 
     prompt = build_rag_prompt(
@@ -161,19 +205,31 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
 
     sources = build_sources(retrieved_results)
 
+    status = "no_answer" if is_no_answer_text(answer) else "answered"
+
+    if status == "no_answer":
+        confidence = "low"
+
     latency_ms = int((time.time() - start_time) * 1000)
 
     query_record = save_query_record(
         project_id=project_id,
         question=question,
         answer=answer,
-        sources=sources,
-        latency_ms=latency_ms
+        sources=sources if status == "answered" else [],
+        latency_ms=latency_ms,
+        status=status,
+        confidence=confidence,
+        top_similarity_score=top_similarity_score,
+        no_answer_reason=None if status == "answered" else "LLM could not answer from context"
     )
 
     return {
         "answer": answer,
-        "sources": sources,
+        "status": status,
+        "confidence": confidence,
+        "top_similarity_score": top_similarity_score,
+        "sources": sources if status == "answered" else [],
         "latency_ms": latency_ms,
         "model_name": "phi3:mini",
         "query_id": query_record["id"]

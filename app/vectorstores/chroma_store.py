@@ -3,8 +3,7 @@ from pathlib import Path
 import chromadb
 
 CHROMA_DIR = Path("vector_db/chroma")
-COLLECTION_NAME = "universal_rag_chunks"
-
+COLLECTION_NAME = "universal_rag_chunks_cosine"
 
 class ChromaVectorStore:
     def __init__(self):
@@ -15,8 +14,11 @@ class ChromaVectorStore:
         )
 
         self.collection = self.client.get_or_create_collection(
-            name=COLLECTION_NAME
-        )
+            name=COLLECTION_NAME,
+            metadata={
+                "hnsw:space": "cosine"
+    }
+)
 
     def upsert_chunks(
         self,
@@ -99,12 +101,13 @@ class ChromaVectorStore:
         distances = results.get("distances", [[]])[0]
 
         for index, chunk_id in enumerate(ids):
+            similarity_score = max(0, min(1, 1 - distances[index]))
             formatted_results.append({
                 "chunk_id": chunk_id,
                 "chunk_text": documents[index],
                 "metadata": metadatas[index],
                 "distance": distances[index],
-                "similarity_score": round(1 - distances[index], 4)
+                "similarity_score": round(similarity_score, 4)
             })
 
         return formatted_results
