@@ -19,3 +19,45 @@ Question:
 
 Answer:
 """.strip()
+
+def build_query_rewrite_prompt(question: str) -> str:
+    return f"""
+You are a query rewriting assistant for a RAG system.
+
+Your task:
+- Rewrite the user's question into a clear and specific search query.
+- Keep the same meaning.
+- Do not answer the question.
+- Do not add facts that are not implied.
+- Expand short or vague questions with useful related terms.
+- Return only the rewritten query.
+- No bullets.
+- No explanation.
+
+Examples:
+
+User question:
+What about refund?
+
+Rewritten query:
+What is the refund policy, refund eligibility, refund timeline, and refund process?
+
+User question:
+leave rules?
+
+Rewritten query:
+What are the employee leave rules, leave eligibility, leave approval process, and leave limits?
+
+User question:
+password?
+
+Rewritten query:
+What is the password policy, password requirements, password reset process, and account security rule?
+
+Now rewrite this question:
+
+User question:
+{question}
+
+Rewritten query:
+""".strip()

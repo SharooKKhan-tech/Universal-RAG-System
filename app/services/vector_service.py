@@ -7,6 +7,9 @@ from app.services.chunk_service import (
 )
 from app.embeddings.local_embeddings import embedding_provider
 from app.vectorstores.chroma_store import vector_store
+from app.retrieval.keyword_search import keyword_search_chunks
+from app.retrieval.hybrid_search import merge_hybrid_results
+from app.retrieval.reranker import rerank_results
 
 
 def index_document_chunks(document_id: str):
@@ -90,6 +93,111 @@ def semantic_search(project_id: str, query: str, top_k: int = 5):
         "top_k": top_k,
         "results": results
     }
+
+def keyword_search(
+    project_id: str,
+    query: str,
+    top_k: int = 5
+):
+    results = keyword_search_chunks(
+        project_id=project_id,
+        query=query,
+        top_k=top_k
+    )
+
+    return {
+        "query": query,
+        "project_id": project_id,
+        "top_k": top_k,
+        "retrieval_mode": "keyword",
+        "results": results
+    }
+
+
+def hybrid_search(
+    project_id: str,
+    query: str,
+    top_k: int = 5
+):
+    semantic_response = semantic_search(
+        project_id=project_id,
+        query=query,
+        top_k=top_k * 2
+    )
+
+    semantic_results = semantic_response.get("results", [])
+
+    keyword_results = keyword_search_chunks(
+        project_id=project_id,
+        query=query,
+        top_k=top_k * 2
+    )
+
+    merged_results = merge_hybrid_results(
+        semantic_results=semantic_results,
+        keyword_results=keyword_results,
+        top_k=top_k
+    )
+
+    return {
+        "query": query,
+        "project_id": project_id,
+        "top_k": top_k,
+        "retrieval_mode": "hybrid",
+        "semantic_results_count": len(semantic_results),
+        "keyword_results_count": len(keyword_results),
+        "results": merged_results
+    }
+
+
+def retrieve_chunks(
+    project_id: str,
+    query: str,
+    top_k: int = 5,
+    retrieval_mode: str = "hybrid",
+    rerank: bool = True
+):
+    candidate_top_k = top_k * 3 if rerank else top_k
+
+    if retrieval_mode == "semantic":
+        response = semantic_search(
+            project_id=project_id,
+            query=query,
+            top_k=candidate_top_k
+        )
+        response["retrieval_mode"] = "semantic"
+
+    elif retrieval_mode == "keyword":
+        response = keyword_search(
+            project_id=project_id,
+            query=query,
+            top_k=candidate_top_k
+        )
+
+    else:
+        response = hybrid_search(
+            project_id=project_id,
+            query=query,
+            top_k=candidate_top_k
+        )
+
+    results = response.get("results", [])
+
+    if rerank:
+        results = rerank_results(
+            query=query,
+            results=results,
+            top_k=top_k
+        )
+    else:
+        results = results[:top_k]
+
+    response["top_k"] = top_k
+    response["candidate_top_k"] = candidate_top_k
+    response["rerank"] = rerank
+    response["results"] = results
+
+    return response
 def delete_vectors_for_document(document_id: str):
     chunks = get_chunks_by_document(document_id)
 

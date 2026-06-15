@@ -20,7 +20,10 @@ def chat_with_documents(
     return answer_question(
         project_id=request.project_id,
         question=request.question,
-        top_k=request.top_k
+        top_k=request.top_k,
+        rewrite_enabled=request.rewrite_query,
+        retrieval_mode=request.retrieval_mode,
+        rerank=request.rerank
     )
 
 

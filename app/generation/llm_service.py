@@ -6,6 +6,17 @@ OLLAMA_MODEL = "phi3:mini"
 
 
 def generate_answer_with_ollama(prompt: str) -> str:
+    return generate_text_with_ollama(
+        prompt=prompt,
+        temperature=0.2,
+        timeout=120
+    )
+    
+def generate_text_with_ollama(
+    prompt: str,
+    temperature: float = 0.1,
+    timeout: int = 120
+) -> str:
     url = f"{OLLAMA_BASE_URL}/api/generate"
 
     payload = {
@@ -13,13 +24,13 @@ def generate_answer_with_ollama(prompt: str) -> str:
         "prompt": prompt,
         "stream": False,
         "options": {
-            "temperature": 0.2,
+            "temperature": temperature,
             "top_p": 0.9
         }
     }
 
     try:
-        response = requests.post(url, json=payload, timeout=120)
+        response = requests.post(url, json=payload, timeout=timeout)
         response.raise_for_status()
 
         data = response.json()
@@ -34,7 +45,7 @@ def generate_answer_with_ollama(prompt: str) -> str:
     except requests.exceptions.Timeout:
         raise HTTPException(
             status_code=504,
-            detail="Ollama response timed out. Try again with smaller top_k or shorter documents."
+            detail="Ollama response timed out."
         )
 
     except requests.exceptions.RequestException as error:

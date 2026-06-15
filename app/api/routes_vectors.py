@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.db.schemas import SearchRequest
 from app.services.vector_service import (
     index_document_chunks,
-    semantic_search
+    retrieve_chunks
 )
 from app.services.document_service import get_document_by_id
 from app.core.security import verify_api_key, ensure_project_access
@@ -33,8 +33,10 @@ def search_vectors(
 ):
     ensure_project_access(api_key_record, request.project_id)
 
-    return semantic_search(
+    return retrieve_chunks(
         project_id=request.project_id,
         query=request.query,
-        top_k=request.top_k
+        top_k=request.top_k,
+        retrieval_mode=request.retrieval_mode,
+        rerank=request.rerank
     )

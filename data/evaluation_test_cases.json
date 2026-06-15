@@ -1,0 +1,104 @@
+[
+    {
+        "id": "1d4ca65f-9ec4-4613-9f66-d9082d220467",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What is the leave policy?",
+        "expected_answer_keywords": [
+            "leave",
+            "policy"
+        ],
+        "expected_source_file": "HR_Leave_and_Attendance_Policy.pdf",
+        "expected_should_answer": true,
+        "top_k": 3,
+        "rewrite_query": true,
+        "retrieval_mode": "hybrid",
+        "rerank": true,
+        "notes": "Checks whether HR leave policy can be answered correctly",
+        "created_at": "2026-06-15T11:26:36.610652"
+    },
+    {
+        "id": "6a43ff00-7b22-475a-95cf-6acdf4e4c4cd",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What is the password policy?",
+        "expected_answer_keywords": [
+            "password",
+            "security"
+        ],
+        "expected_source_file": "IT_Security_and_Data_Protection_Policy.pdf",
+        "expected_should_answer": true,
+        "top_k": 3,
+        "rewrite_query": true,
+        "retrieval_mode": "hybrid",
+        "rerank": true,
+        "notes": "Checks IT security document retrieval",
+        "created_at": "2026-06-15T11:27:03.025337"
+    },
+    {
+        "id": "c1198885-5672-478e-a6e6-b0b4af038e18",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What proof is required for travel reimbursement?",
+        "expected_answer_keywords": [
+            "travel",
+            "reimbursement"
+        ],
+        "expected_source_file": "Employee_Travel_and_Expense_Policy.pdf",
+        "expected_should_answer": true,
+        "top_k": 3,
+        "rewrite_query": true,
+        "retrieval_mode": "hybrid",
+        "rerank": true,
+        "notes": "Checks travel expense policy",
+        "created_at": "2026-06-15T11:27:37.664889"
+    },
+    {
+        "id": "2064044c-b9c6-48fa-adac-1006443998bd",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "Who won yesterday cricket match?",
+        "expected_answer_keywords": [],
+        "expected_source_file": null,
+        "expected_should_answer": false,
+        "top_k": 3,
+        "rewrite_query": true,
+        "retrieval_mode": "hybrid",
+        "rerank": true,
+        "notes": "Checks no-answer detection",
+        "created_at": "2026-06-15T11:28:01.252623"
+    },
+    {
+        "id": "82740580-90f7-4c2a-8d56-6743f22cfcef",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What is the leave policy?",
+        "expected_answer_keywords": [
+            "casual",
+            "sick",
+            "earned",
+            "approval"
+        ],
+        "expected_source_file": "HR_Leave_and_Attendance_Policy.pdf",
+        "expected_should_answer": true,
+        "top_k": 3,
+        "rewrite_query": true,
+        "retrieval_mode": "hybrid",
+        "rerank": true,
+        "notes": "Checks whether HR leave policy can be answered correctly",
+        "created_at": "2026-06-15T11:44:10.890232"
+    },
+    {
+        "id": "43ab5109-15df-45a2-b84b-04bb04d1602b",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "What is the password policy?",
+        "expected_answer_keywords": [
+            "password",
+            "characters",
+            "multi-factor"
+        ],
+        "expected_source_file": "IT_Security_and_Data_Protection_Policy.pdf",
+        "expected_should_answer": true,
+        "top_k": 3,
+        "rewrite_query": true,
+        "retrieval_mode": "hybrid",
+        "rerank": true,
+        "notes": "Checks IT security document retrieval",
+        "created_at": "2026-06-15T11:45:19.315351"
+    }
+]

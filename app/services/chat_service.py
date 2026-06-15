@@ -4,16 +4,18 @@ from uuid import uuid4
 from datetime import datetime
 import time
 
-from app.services.vector_service import semantic_search
+from app.services.vector_service import retrieve_chunks
 from app.generation.prompts import build_rag_prompt
 from app.generation.llm_service import generate_answer_with_ollama
+from app.retrieval.query_rewriter import rewrite_query
 
 from app.retrieval.confidence import (
     NO_ANSWER_TEXT,
     get_top_similarity_score,
     get_confidence_level,
     should_return_no_answer_before_llm,
-    is_no_answer_text
+    is_no_answer_text,
+    filter_context_results
 )
 
 DATA_DIR = Path("data")
@@ -77,6 +79,16 @@ def build_sources(results: list) -> list:
             "page_number": metadata.get("page_number"),
             "chunk_index": metadata.get("chunk_index"),
             "similarity_score": result.get("similarity_score"),
+            "keyword_score": result.get("keyword_score"),
+            "semantic_score": result.get("semantic_score"),
+            "hybrid_score": result.get("hybrid_score"),
+            "confidence_score": result.get("confidence_score"),
+            "retrieval_source": result.get("retrieval_source"),
+            "was_reranked": result.get("was_reranked", False),
+            "rerank_score": result.get("rerank_score"),
+            "rerank_score_raw": result.get("rerank_score_raw"),
+            "original_rank": result.get("original_rank"),
+            "rerank_position": result.get("rerank_position"),
             "distance": result.get("distance")
         })
 
@@ -93,7 +105,11 @@ def save_query_record(
     status: str = "answered",
     confidence: str = "medium",
     top_similarity_score: float | None = None,
-    no_answer_reason: str | None = None
+    no_answer_reason: str | None = None,
+    rewritten_query: str | None = None,
+    was_query_rewritten: bool = False,
+    retrieval_mode: str = "hybrid",
+    rerank: bool = True
 ):
     queries = load_queries()
 
@@ -104,6 +120,8 @@ def save_query_record(
         "id": str(uuid4()),
         "project_id": project_id,
         "question": question,
+        "rewritten_query": rewritten_query or question,
+        "was_query_rewritten": was_query_rewritten,
         "answer": answer,
         "sources": sources,
         "source_count": len(sources),
@@ -114,7 +132,9 @@ def save_query_record(
         "no_answer_reason": no_answer_reason,
         "latency_ms": latency_ms,
         "model_name": model_name,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat(),
+        "retrieval_mode": retrieval_mode,
+        "rerank": rerank
     }
 
     queries.append(record)
@@ -123,16 +143,41 @@ def save_query_record(
     return record
 
 
-def answer_question(project_id: str, question: str, top_k: int = 5):
+def answer_question(
+    project_id: str,
+    question: str,
+    top_k: int = 5,
+    rewrite_enabled: bool = True,
+    retrieval_mode: str = "hybrid",
+    rerank: bool = True
+):
     start_time = time.time()
 
-    search_response = semantic_search(
+    rewrite_result = {
+        "original_query": question,
+        "rewritten_query": question,
+        "was_rewritten": False
+    }
+
+    if rewrite_enabled:
+        rewrite_result = rewrite_query(question)
+
+    retrieval_query = rewrite_result["rewritten_query"]
+
+    search_response = retrieve_chunks(
         project_id=project_id,
-        query=question,
-        top_k=top_k
+        query=retrieval_query,
+        top_k=top_k,
+        retrieval_mode=retrieval_mode,
+        rerank=rerank
     )
 
-    retrieved_results = search_response.get("results", [])
+    raw_retrieved_results = search_response.get("results", [])
+
+    retrieved_results = filter_context_results(
+        results=raw_retrieved_results,
+        max_results=top_k
+    )
 
     top_similarity_score = get_top_similarity_score(retrieved_results)
     confidence = get_confidence_level(top_similarity_score)
@@ -150,7 +195,11 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
             status="no_answer",
             confidence="low",
             top_similarity_score=None,
-            no_answer_reason="No relevant chunks retrieved"
+            no_answer_reason="No relevant chunks retrieved",
+            rewritten_query=retrieval_query,
+            was_query_rewritten=rewrite_result["was_rewritten"],
+            retrieval_mode=retrieval_mode,
+            rerank=rerank
         )
 
         return {
@@ -159,6 +208,11 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
             "confidence": "low",
             "top_similarity_score": None,
             "no_answer_reason": "No relevant chunks retrieved",
+            "original_query": question,
+            "rewritten_query": retrieval_query,
+            "was_query_rewritten": rewrite_result["was_rewritten"],
+            "retrieval_mode": retrieval_mode,
+            "rerank": rerank,
             "sources": [],
             "latency_ms": latency_ms,
             "model_name": "phi3:mini",
@@ -178,7 +232,11 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
             status="no_answer",
             confidence=confidence,
             top_similarity_score=top_similarity_score,
-            no_answer_reason="Top similarity score is below threshold"
+            no_answer_reason="Top similarity score is below threshold",
+            rewritten_query=retrieval_query,
+            was_query_rewritten=rewrite_result["was_rewritten"],
+            retrieval_mode=retrieval_mode,
+            rerank=rerank
         )
 
         return {
@@ -187,13 +245,18 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
             "confidence": confidence,
             "top_similarity_score": top_similarity_score,
             "no_answer_reason": "Top similarity score is below threshold",
+            "original_query": question,
+            "rewritten_query": retrieval_query,
+            "was_query_rewritten": rewrite_result["was_rewritten"],
+            "retrieval_mode": retrieval_mode,
+            "rerank": rerank,
             "sources": [],
             "latency_ms": latency_ms,
             "model_name": "phi3:mini",
             "query_id": query_record["id"]
         }
 
-    # Case 3: Good enough context, generate answer
+    # Case 3: Good context found
     context = build_context_from_results(retrieved_results)
 
     prompt = build_rag_prompt(
@@ -221,7 +284,11 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
         status=status,
         confidence=confidence,
         top_similarity_score=top_similarity_score,
-        no_answer_reason=None if status == "answered" else "LLM could not answer from context"
+        no_answer_reason=None if status == "answered" else "LLM could not answer from context",
+        rewritten_query=retrieval_query,
+        was_query_rewritten=rewrite_result["was_rewritten"],
+        retrieval_mode=retrieval_mode,
+        rerank=rerank
     )
 
     return {
@@ -229,6 +296,11 @@ def answer_question(project_id: str, question: str, top_k: int = 5):
         "status": status,
         "confidence": confidence,
         "top_similarity_score": top_similarity_score,
+        "original_query": question,
+        "rewritten_query": retrieval_query,
+        "was_query_rewritten": rewrite_result["was_rewritten"],
+        "retrieval_mode": retrieval_mode,
+        "rerank": rerank,
         "sources": sources if status == "answered" else [],
         "latency_ms": latency_ms,
         "model_name": "phi3:mini",
