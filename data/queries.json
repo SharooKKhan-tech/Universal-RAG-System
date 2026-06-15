@@ -302,5 +302,278 @@
         "latency_ms": 34074,
         "model_name": "phi3:mini",
         "created_at": "2026-06-12T10:05:12.321012"
+    },
+    {
+        "id": "e0bafc1b-d731-4c0b-87e6-4c1a9fe04dbc",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What final status should the document have?",
+        "answer": "Indexed.",
+        "sources": [
+            {
+                "chunk_id": "37a91d9b-8266-4d5a-8654-6e1e5c03703a",
+                "file_name": "Feature7_Auto_Index_Test_Document.pdf",
+                "file_type": "pdf",
+                "page_number": 2,
+                "chunk_index": 2,
+                "similarity_score": -0.3613,
+                "distance": 1.361334204673767
+            },
+            {
+                "chunk_id": "b725252e-ee83-4a7c-8509-8b6a76997ee5",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 6,
+                "chunk_index": 13,
+                "similarity_score": -0.3706,
+                "distance": 1.370553970336914
+            }
+        ],
+        "latency_ms": 27191,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:17:39.158535"
+    },
+    {
+        "id": "e5752e80-649c-4413-ad62-b4ab99a9a313",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What does Feature 7 do?",
+        "answer": "Feature 7 introduces an automatic document pipeline that processes uploaded PDF and TXT files, extracts text using pypdf for test purposes. It creates chunks of the extracted content, generates embeddings, stores vectors in ChromaDB, marks documents as indexed, and enables immediate question-asking without manual API calls.",
+        "sources": [
+            {
+                "chunk_id": "0a7d5e5f-924b-40cf-8d26-53bae2ced99d",
+                "file_name": "Feature7_Auto_Index_Test_Document.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.5752,
+                "distance": 1.575209617614746
+            },
+            {
+                "chunk_id": "ae37d497-572d-48a2-b97d-69422268956b",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 6,
+                "chunk_index": 12,
+                "similarity_score": -0.5926,
+                "distance": 1.5925898551940918
+            }
+        ],
+        "latency_ms": 40438,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:19:39.278933"
+    },
+    {
+        "id": "9a0e1a3b-1757-4800-8836-615662b7d7ac",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What header is required for protected APIs?",
+        "answer": "Authentication tokens or secure API keys are typically used as headers for authentication in secured APIs, although specifics can vary based on the system's implementation details mentioned within its policy. However, this information isn't directly provided in the context given; hence I don't have enough information to answer this question accurately from the uploaded documents.",
+        "sources": [
+            {
+                "chunk_id": "257abbda-5a23-48ae-88ec-014ec6e75644",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 7,
+                "similarity_score": -0.3549,
+                "distance": 1.3549399375915527
+            },
+            {
+                "chunk_id": "01442cb7-d987-455e-b068-c58c72e3acd2",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 8,
+                "similarity_score": -0.3822,
+                "distance": 1.382195234298706
+            }
+        ],
+        "latency_ms": 26506,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:20:49.662445"
+    },
+    {
+        "id": "97d78dec-8eef-426d-bf8e-3151413605d7",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is the leave policy?",
+        "answer": "The context provided does not include specific details about the leave policy within these documents. I don't have enough information in the uploaded documents to answer this question regarding the leave policy specifically. Users are advised that for confidential, legal, payroll, grievance, or emergency matters including but not limited to HR policies and procedures such as attendance rules, they should request escalation to HR.",
+        "sources": [
+            {
+                "chunk_id": "ae37d497-572d-48a2-b97d-69422268956b",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 6,
+                "chunk_index": 12,
+                "similarity_score": -0.2618,
+                "distance": 1.2618297338485718
+            },
+            {
+                "chunk_id": "06679343-463e-4905-ad22-fbd1ec0068a0",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 3,
+                "chunk_index": 3,
+                "similarity_score": -0.274,
+                "distance": 1.273985743522644
+            },
+            {
+                "chunk_id": "06de0566-e844-4acb-ae48-b6620b65a6be",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.3323,
+                "distance": 1.332298755645752
+            }
+        ],
+        "source_count": 3,
+        "top_similarity_score": -0.2618,
+        "is_no_answer": false,
+        "status": "answered",
+        "latency_ms": 55790,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:45:46.527186"
+    },
+    {
+        "id": "ba443332-0314-46f2-89fc-32fa8615ae93",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What is the Acceptable Use?",
+        "answer": "The acceptable use of the HR chat system includes asking questions about company HR policies, leave rules, attendance, payroll dates, benefits, onboarding, exit process, and employee documents. Users may also submit HR service requests through this platform. Communication should be professional, respectful, clear, accurate, avoid offensive content, slang or unclear abbreviations for official HR requests are not allowed, and duplicate submissions of unresolved issues after the expected response time is discouraged.",
+        "sources": [
+            {
+                "chunk_id": "01442cb7-d987-455e-b068-c58c72e3acd2",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 8,
+                "similarity_score": -0.3275,
+                "distance": 1.327534794807434
+            },
+            {
+                "chunk_id": "352c4eab-2b2e-49a2-8f6a-578a78d9062a",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 2,
+                "similarity_score": -0.361,
+                "distance": 1.3609659671783447
+            },
+            {
+                "chunk_id": "06de0566-e844-4acb-ae48-b6620b65a6be",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.3688,
+                "distance": 1.3687715530395508
+            }
+        ],
+        "source_count": 3,
+        "top_similarity_score": -0.3275,
+        "is_no_answer": false,
+        "status": "answered",
+        "latency_ms": 44510,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:47:22.668639"
+    },
+    {
+        "id": "0140766b-2c59-4af1-b5e2-3d0720ecdf97",
+        "project_id": "a08762d6-8d7d-405a-9d94-280b4266da04",
+        "question": "What are theSecurity Requirements?",
+        "answer": "- User authentication is required before accessing personal HR data.\n\n- Role-based access control restricts data access based on job responsibilities.\n\n- Sensitive data should be encrypted in transit and, where applicable, at rest.\n\n- Audit logs must record access to sensitive HR information.",
+        "sources": [
+            {
+                "chunk_id": "01442cb7-d987-455e-b068-c58c72e3acd2",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 8,
+                "similarity_score": -0.1405,
+                "distance": 1.1405353546142578
+            },
+            {
+                "chunk_id": "257abbda-5a23-48ae-88ec-014ec6e75644",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 4,
+                "chunk_index": 7,
+                "similarity_score": -0.1644,
+                "distance": 1.1644459962844849
+            },
+            {
+                "chunk_id": "8a5f785b-be13-49e1-89df-3520b49034df",
+                "file_name": "HR_Chat_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 3,
+                "chunk_index": 4,
+                "similarity_score": -0.3111,
+                "distance": 1.3110852241516113
+            }
+        ],
+        "source_count": 3,
+        "top_similarity_score": -0.1405,
+        "is_no_answer": false,
+        "status": "answered",
+        "latency_ms": 39616,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-12T10:49:10.893211"
+    },
+    {
+        "id": "565d400e-2109-4c81-8d90-49846c5d62eb",
+        "project_id": "b035ca01-225b-4c42-8a71-542d681c117b",
+        "question": "what is the return guide",
+        "answer": "The Product Warranty and Returns Guide provides information on warranty coverage for electronics (one year) and accessories (six months), replacement conditions based on remaining original warranty or ninety days, refund timelines initiated within five to seven business days after inspection approval if the product is unused, undamaged, with original packaging. It also outlines return eligibility for opened products due to verified manufacturing defects and specifies that physical damage, water damage, unauthorized repair, misuse, normal wear and tear are not covered by warranty. Products without valid purchase proof may be rejected for service under the guide.",
+        "sources": [
+            {
+                "chunk_id": "8f8b890e-a8b9-41d4-bbfe-98e331b563ab",
+                "file_name": "Product_Warranty_and_Returns_Guide.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 1,
+                "similarity_score": -0.3632,
+                "distance": 1.3632373809814453
+            },
+            {
+                "chunk_id": "212f6f8c-70e1-4494-b836-eaf546c53698",
+                "file_name": "Product_Warranty_and_Returns_Guide.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.447,
+                "distance": 1.4469695091247559
+            },
+            {
+                "chunk_id": "5304acb9-3420-4868-ab3b-889be9dde2d3",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 0,
+                "similarity_score": -0.474,
+                "distance": 1.4739975929260254
+            },
+            {
+                "chunk_id": "921f46c7-ef72-48fe-80b7-561ce75b4099",
+                "file_name": "Product_Warranty_and_Returns_Guide.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 2,
+                "similarity_score": -0.5349,
+                "distance": 1.5348604917526245
+            },
+            {
+                "chunk_id": "03387323-ff86-497b-b9aa-8a29b39ccb50",
+                "file_name": "Employee_Travel_and_Expense_Policy.pdf",
+                "file_type": "pdf",
+                "page_number": 1,
+                "chunk_index": 1,
+                "similarity_score": -0.6381,
+                "distance": 1.6380712985992432
+            }
+        ],
+        "source_count": 5,
+        "top_similarity_score": -0.3632,
+        "is_no_answer": false,
+        "status": "answered",
+        "latency_ms": 68402,
+        "model_name": "phi3:mini",
+        "created_at": "2026-06-15T05:10:48.157224"
     }
 ]

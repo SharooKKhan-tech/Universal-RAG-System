@@ -85,12 +85,28 @@ def save_query_record(
 ):
     queries = load_queries()
 
+    no_answer_text = "I don't have enough information in the uploaded documents to answer this."
+
+    is_no_answer = answer.strip().lower() == no_answer_text.lower()
+
+    similarity_scores = [
+        source.get("similarity_score")
+        for source in sources
+        if source.get("similarity_score") is not None
+    ]
+
+    top_similarity_score = max(similarity_scores) if similarity_scores else None
+
     record = {
         "id": str(uuid4()),
         "project_id": project_id,
         "question": question,
         "answer": answer,
         "sources": sources,
+        "source_count": len(sources),
+        "top_similarity_score": top_similarity_score,
+        "is_no_answer": is_no_answer,
+        "status": "no_answer" if is_no_answer else "answered",
         "latency_ms": latency_ms,
         "model_name": model_name,
         "created_at": datetime.utcnow().isoformat()

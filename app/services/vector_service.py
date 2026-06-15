@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-
+from app.services.chunk_service import chunk_document
 from app.services.document_service import get_document_by_id
 from app.services.chunk_service import (
     get_chunks_by_document,
@@ -89,4 +89,97 @@ def semantic_search(project_id: str, query: str, top_k: int = 5):
         "project_id": project_id,
         "top_k": top_k,
         "results": results
+    }
+def delete_vectors_for_document(document_id: str):
+    chunks = get_chunks_by_document(document_id)
+
+    if chunks:
+        chunk_ids = [chunk["id"] for chunk in chunks]
+
+        return vector_store.delete_chunks(chunk_ids)
+
+    return vector_store.delete_document_vectors(document_id)
+
+
+def reindex_document_chunks(document_id: str):
+    document = get_document_by_id(document_id)
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    if document["status"] == "failed":
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot re-index a failed document. Upload the document again."
+        )
+
+    chunks = get_chunks_by_document(document_id)
+
+    # Delete old vectors first
+    delete_vectors_for_document(document_id)
+
+    # If chunks are missing but extracted text exists, chunk again
+    if not chunks:
+        if document.get("text_path"):
+            update_document_status(document_id, "text_extracted")
+            chunk_document(document_id)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="No chunks or extracted text found for this document"
+            )
+
+    result = index_document_chunks(document_id)
+
+    return {
+        "message": "Document re-indexed successfully",
+        "document_id": document_id,
+        "result": result
+    }
+
+def delete_vectors_for_document(document_id: str):
+    chunks = get_chunks_by_document(document_id)
+
+    if chunks:
+        chunk_ids = [chunk["id"] for chunk in chunks]
+
+        return vector_store.delete_chunks(chunk_ids)
+
+    return vector_store.delete_document_vectors(document_id)
+
+
+def reindex_document_chunks(document_id: str):
+    document = get_document_by_id(document_id)
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    if document["status"] == "failed":
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot re-index a failed document. Upload the document again."
+        )
+
+    chunks = get_chunks_by_document(document_id)
+
+    # Delete old vectors first
+    delete_vectors_for_document(document_id)
+
+    # If chunks are missing but extracted text exists, chunk again
+    if not chunks:
+        if document.get("text_path"):
+            update_document_status(document_id, "text_extracted")
+            chunk_document(document_id)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="No chunks or extracted text found for this document"
+            )
+
+    result = index_document_chunks(document_id)
+
+    return {
+        "message": "Document re-indexed successfully",
+        "document_id": document_id,
+        "result": result
     }

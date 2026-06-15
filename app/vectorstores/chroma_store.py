@@ -64,6 +64,32 @@ class ChromaVectorStore:
 
         return self._format_results(results)
 
+    def delete_chunks(self, ids: List[str]):
+        if not ids:
+            return {
+                "message": "No vectors to delete",
+                "deleted_count": 0
+            }
+
+        self.collection.delete(ids=ids)
+
+        return {
+            "message": "Vectors deleted successfully",
+            "deleted_count": len(ids)
+        }
+
+    def delete_document_vectors(self, document_id: str):
+        self.collection.delete(
+            where={
+                "document_id": document_id
+            }
+        )
+
+        return {
+            "message": "Document vectors deleted successfully",
+            "document_id": document_id
+        }
+
     def _format_results(self, results):
         formatted_results = []
 

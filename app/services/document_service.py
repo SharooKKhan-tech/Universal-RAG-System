@@ -122,13 +122,21 @@ async def upload_and_process_document(project_id: str, file: UploadFile):
     return document_record
 
 
-def get_documents_by_project(project_id: str):
+def get_documents_by_project(project_id: str, status: str | None = None):
     documents = load_documents()
 
-    return [
+    project_documents = [
         document for document in documents
         if document["project_id"] == project_id
     ]
+
+    if status:
+        project_documents = [
+            document for document in project_documents
+            if document.get("status") == status
+        ]
+
+    return project_documents
 
 
 def get_document_by_id(document_id: str):
