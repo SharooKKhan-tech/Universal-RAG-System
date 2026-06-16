@@ -1,9 +1,11 @@
-import json
-from pathlib import Path
 from uuid import uuid4
 from datetime import datetime
 import time
-
+from sqlalchemy import select, delete
+from app.services.cache_service import (
+    get_cached_answer,
+    set_cached_answer
+)
 from app.services.vector_service import retrieve_chunks
 from app.generation.prompts import build_rag_prompt
 from app.generation.llm_service import generate_answer_with_ollama
@@ -18,29 +20,43 @@ from app.retrieval.confidence import (
     filter_context_results
 )
 
-DATA_DIR = Path("data")
-QUERIES_FILE = DATA_DIR / "queries.json"
+from app.db.models import QueryLog
+from app.db.sync_database import SessionLocal
 
 
-def ensure_query_storage_exists():
-    DATA_DIR.mkdir(exist_ok=True)
-
-    if not QUERIES_FILE.exists():
-        QUERIES_FILE.write_text("[]", encoding="utf-8")
+def query_log_to_dict(query_log: QueryLog):
+    return {
+        "id": query_log.id,
+        "project_id": query_log.project_id,
+        "question": query_log.question,
+        "answer": query_log.answer,
+        "sources": query_log.sources or [],
+        "source_count": query_log.source_count,
+        "top_similarity_score": query_log.top_similarity_score,
+        "confidence": query_log.confidence,
+        "status": query_log.status,
+        "latency_ms": query_log.latency_ms,
+        "model_name": query_log.model_name,
+        "created_at": query_log.created_at
+    }
 
 
 def load_queries():
-    ensure_query_storage_exists()
+    """
+    Kept for analytics compatibility.
+    Returns all query logs from PostgreSQL as dictionaries.
+    """
+    with SessionLocal() as db:
+        result = db.execute(
+            select(QueryLog).order_by(QueryLog.created_at.desc())
+        )
 
-    with open(QUERIES_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
+        query_logs = result.scalars().all()
 
-
-def save_queries(queries):
-    ensure_query_storage_exists()
-
-    with open(QUERIES_FILE, "w", encoding="utf-8") as file:
-        json.dump(queries, file, indent=4)
+        return [
+            query_log_to_dict(query_log)
+            for query_log in query_logs
+        ]
 
 
 def build_context_from_results(results: list) -> str:
@@ -102,45 +118,62 @@ def save_query_record(
     sources: list,
     latency_ms: int,
     model_name: str = "phi3:mini",
-    status: str = "answered",
-    confidence: str = "medium",
-    top_similarity_score: float | None = None,
-    no_answer_reason: str | None = None,
-    rewritten_query: str | None = None,
-    was_query_rewritten: bool = False,
-    retrieval_mode: str = "hybrid",
-    rerank: bool = True
+    confidence: str | None = None,
+    status: str | None = None,
+    top_similarity_score: float | None = None
 ):
-    queries = load_queries()
+    sources = sources or []
 
-    if is_no_answer_text(answer):
-        status = "no_answer"
+    no_answer_detected = answer.strip().lower() == NO_ANSWER_TEXT.lower()
 
-    record = {
-        "id": str(uuid4()),
-        "project_id": project_id,
-        "question": question,
-        "rewritten_query": rewritten_query or question,
-        "was_query_rewritten": was_query_rewritten,
-        "answer": answer,
-        "sources": sources,
-        "source_count": len(sources),
-        "top_similarity_score": top_similarity_score,
-        "confidence": confidence,
-        "is_no_answer": status == "no_answer",
-        "status": status,
-        "no_answer_reason": no_answer_reason,
-        "latency_ms": latency_ms,
-        "model_name": model_name,
-        "created_at": datetime.utcnow().isoformat(),
-        "retrieval_mode": retrieval_mode,
-        "rerank": rerank
-    }
+    similarity_scores = [
+        source.get("similarity_score")
+        for source in sources
+        if isinstance(source, dict) and source.get("similarity_score") is not None
+    ]
 
-    queries.append(record)
-    save_queries(queries)
+    calculated_top_score = max(similarity_scores) if similarity_scores else None
 
-    return record
+    final_top_score = (
+        top_similarity_score
+        if top_similarity_score is not None
+        else calculated_top_score
+    )
+
+    final_status = status or ("no_answer" if no_answer_detected else "answered")
+
+    if confidence:
+        final_confidence = confidence
+    elif no_answer_detected:
+        final_confidence = "low"
+    elif final_top_score is not None and final_top_score >= 0.65:
+        final_confidence = "high"
+    elif final_top_score is not None and final_top_score >= 0.45:
+        final_confidence = "medium"
+    else:
+        final_confidence = "low"
+
+    with SessionLocal() as db:
+        query_log = QueryLog(
+            id=str(uuid4()),
+            project_id=project_id,
+            question=question,
+            answer=answer,
+            sources=sources,
+            source_count=len(sources),
+            top_similarity_score=final_top_score,
+            confidence=final_confidence,
+            status=final_status,
+            latency_ms=latency_ms,
+            model_name=model_name,
+            created_at=datetime.utcnow()
+        )
+
+        db.add(query_log)
+        db.commit()
+        db.refresh(query_log)
+
+        return query_log_to_dict(query_log)
 
 
 def answer_question(
@@ -152,6 +185,33 @@ def answer_question(
     rerank: bool = True
 ):
     start_time = time.time()
+
+    cached_response = get_cached_answer(
+        project_id=project_id,
+        question=question,
+        top_k=top_k
+    )
+
+    if cached_response:
+        latency_ms = int((time.time() - start_time) * 1000)
+
+        query_record = save_query_record(
+            project_id=project_id,
+            question=question,
+            answer=cached_response["answer"],
+            sources=cached_response.get("sources", []),
+            latency_ms=latency_ms,
+            model_name="cache",
+            confidence=cached_response.get("confidence"),
+            status=cached_response.get("status"),
+            top_similarity_score=cached_response.get("top_similarity_score")
+        )
+
+        cached_response["latency_ms"] = latency_ms
+        cached_response["cache_hit"] = True
+        cached_response["query_id"] = query_record["id"]
+
+        return cached_response
 
     rewrite_result = {
         "original_query": question,
@@ -192,32 +252,33 @@ def answer_question(
             answer=NO_ANSWER_TEXT,
             sources=[],
             latency_ms=latency_ms,
+            model_name="phi3:mini",
             status="no_answer",
             confidence="low",
-            top_similarity_score=None,
-            no_answer_reason="No relevant chunks retrieved",
-            rewritten_query=retrieval_query,
-            was_query_rewritten=rewrite_result["was_rewritten"],
-            retrieval_mode=retrieval_mode,
-            rerank=rerank
+            top_similarity_score=None
         )
 
-        return {
+        response_payload = {
             "answer": NO_ANSWER_TEXT,
             "status": "no_answer",
             "confidence": "low",
             "top_similarity_score": None,
-            "no_answer_reason": "No relevant chunks retrieved",
             "original_query": question,
-            "rewritten_query": retrieval_query,
-            "was_query_rewritten": rewrite_result["was_rewritten"],
-            "retrieval_mode": retrieval_mode,
-            "rerank": rerank,
             "sources": [],
             "latency_ms": latency_ms,
             "model_name": "phi3:mini",
-            "query_id": query_record["id"]
+            "query_id": query_record["id"],
+            "cache_hit": False
         }
+
+        set_cached_answer(
+            project_id=project_id,
+            question=question,
+            top_k=top_k,
+            data=response_payload
+        )
+
+        return response_payload
 
     # Case 2: Retrieved chunks are too weak
     if should_return_no_answer_before_llm(top_similarity_score):
@@ -229,32 +290,33 @@ def answer_question(
             answer=NO_ANSWER_TEXT,
             sources=[],
             latency_ms=latency_ms,
+            model_name="phi3:mini",
             status="no_answer",
             confidence=confidence,
-            top_similarity_score=top_similarity_score,
-            no_answer_reason="Top similarity score is below threshold",
-            rewritten_query=retrieval_query,
-            was_query_rewritten=rewrite_result["was_rewritten"],
-            retrieval_mode=retrieval_mode,
-            rerank=rerank
+            top_similarity_score=top_similarity_score
         )
 
-        return {
+        response_payload = {
             "answer": NO_ANSWER_TEXT,
             "status": "no_answer",
             "confidence": confidence,
             "top_similarity_score": top_similarity_score,
-            "no_answer_reason": "Top similarity score is below threshold",
             "original_query": question,
-            "rewritten_query": retrieval_query,
-            "was_query_rewritten": rewrite_result["was_rewritten"],
-            "retrieval_mode": retrieval_mode,
-            "rerank": rerank,
             "sources": [],
             "latency_ms": latency_ms,
             "model_name": "phi3:mini",
-            "query_id": query_record["id"]
+            "query_id": query_record["id"],
+            "cache_hit": False
         }
+
+        set_cached_answer(
+            project_id=project_id,
+            question=question,
+            top_k=top_k,
+            data=response_payload
+        )
+
+        return response_payload
 
     # Case 3: Good context found
     context = build_context_from_results(retrieved_results)
@@ -281,55 +343,72 @@ def answer_question(
         answer=answer,
         sources=sources if status == "answered" else [],
         latency_ms=latency_ms,
-        status=status,
+        model_name="phi3:mini",
         confidence=confidence,
-        top_similarity_score=top_similarity_score,
-        no_answer_reason=None if status == "answered" else "LLM could not answer from context",
-        rewritten_query=retrieval_query,
-        was_query_rewritten=rewrite_result["was_rewritten"],
-        retrieval_mode=retrieval_mode,
-        rerank=rerank
+        status=status,
+        top_similarity_score=top_similarity_score
     )
 
-    return {
+    response_payload = {
         "answer": answer,
-        "status": status,
-        "confidence": confidence,
-        "top_similarity_score": top_similarity_score,
-        "original_query": question,
-        "rewritten_query": retrieval_query,
-        "was_query_rewritten": rewrite_result["was_rewritten"],
-        "retrieval_mode": retrieval_mode,
-        "rerank": rerank,
         "sources": sources if status == "answered" else [],
         "latency_ms": latency_ms,
         "model_name": "phi3:mini",
-        "query_id": query_record["id"]
+        "query_id": query_record["id"],
+        "cache_hit": False,
+        "original_query": question
     }
+
+    if "confidence" in locals():
+        response_payload["confidence"] = confidence
+
+    if "status" in locals():
+        response_payload["status"] = status
+
+    if "top_similarity_score" in locals():
+        response_payload["top_similarity_score"] = top_similarity_score
+
+    set_cached_answer(
+        project_id=project_id,
+        question=question,
+        top_k=top_k,
+        data=response_payload
+    )
+
+    return response_payload
 
 
 def get_queries_by_project(project_id: str):
-    queries = load_queries()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(QueryLog)
+            .where(QueryLog.project_id == project_id)
+            .order_by(QueryLog.created_at.desc())
+        )
 
-    return [
-        query for query in queries
-        if query["project_id"] == project_id
-    ]
+        query_logs = result.scalars().all()
+
+        return [
+            query_log_to_dict(query_log)
+            for query_log in query_logs
+        ]
 
 def delete_queries_by_project(project_id: str):
-    queries = load_queries()
+    with SessionLocal() as db:
+        existing_logs = db.execute(
+            select(QueryLog).where(QueryLog.project_id == project_id)
+        ).scalars().all()
 
-    remaining_queries = [
-        query for query in queries
-        if query["project_id"] != project_id
-    ]
+        deleted_count = len(existing_logs)
 
-    deleted_count = len(queries) - len(remaining_queries)
+        db.execute(
+            delete(QueryLog).where(QueryLog.project_id == project_id)
+        )
 
-    save_queries(remaining_queries)
+        db.commit()
 
-    return {
-        "message": "Project query history deleted successfully",
-        "project_id": project_id,
-        "deleted_count": deleted_count
-    }
+        return {
+            "message": "Project query history deleted successfully",
+            "project_id": project_id,
+            "deleted_count": deleted_count
+        }

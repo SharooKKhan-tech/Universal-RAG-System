@@ -10,6 +10,7 @@ from app.api.routes_analytics import router as analytics_router
 from app.api.routes_query_rewrite import router as query_rewrite_router
 from app.api.routes_evaluations import router as evaluations_router
 from app.api.routes_db_health import router as db_health_router
+from app.api.routes_cache import router as cache_router
 app = FastAPI(
     title="Universal RAG System",
     description="A reusable RAG backend platform for multiple applications",
@@ -27,6 +28,7 @@ app.include_router(analytics_router, prefix="/api/v1", tags=["Analytics"])
 app.include_router(query_rewrite_router, prefix="/api/v1", tags=["Query Rewriting"])
 app.include_router(evaluations_router, prefix="/api/v1", tags=["Evaluations"])
 app.include_router(db_health_router, prefix="/api/v1", tags=["Database"])
+app.include_router(cache_router, prefix="/api/v1", tags=["Cache"])
 
 
 @app.get("/")

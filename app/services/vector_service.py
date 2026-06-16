@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from app.services.chunk_service import chunk_document
 from app.services.document_service import get_document_by_id, update_document_status
+from app.services.cache_service import delete_project_chat_cache
 from app.services.chunk_service import (
     get_chunks_by_document,
     
@@ -238,6 +239,8 @@ def reindex_document_chunks(document_id: str):
             )
 
     result = index_document_chunks(document_id)
+    delete_project_chat_cache(document["project_id"])
+    delete_project_chat_cache(document["project_id"])
 
     return {
         "message": "Document re-indexed successfully",

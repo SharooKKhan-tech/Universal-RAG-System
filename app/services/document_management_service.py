@@ -7,6 +7,7 @@ from app.db.sync_database import SessionLocal
 from app.services.document_service import get_document_by_id
 from app.services.chunk_service import get_chunks_by_document, delete_chunks_by_document
 from app.services.vector_service import delete_vectors_for_document
+from app.services.cache_service import delete_project_chat_cache
 
 
 def delete_file_if_exists(file_path: str | None):
@@ -57,6 +58,8 @@ def delete_document_completely(document_id: str):
     # 4. Delete document record from PostgreSQL
     document_record_deleted = delete_document_record(document_id)
 
+    cache_cleanup = delete_project_chat_cache(project_id)
+
     return {
         "message": "Document deleted successfully",
         "document_id": document_id,
@@ -66,5 +69,6 @@ def delete_document_completely(document_id: str):
         "vector_delete_result": vector_result,
         "uploaded_file_deleted": uploaded_file_deleted,
         "extracted_text_deleted": extracted_text_deleted,
-        "document_record_deleted": document_record_deleted
+        "document_record_deleted": document_record_deleted,
+        "cache_cleanup": cache_cleanup
     }

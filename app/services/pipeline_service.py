@@ -1,5 +1,5 @@
 from fastapi import UploadFile, HTTPException
-
+from app.services.cache_service import delete_project_chat_cache
 from app.services.document_service import (
     upload_and_process_document,
     get_document_by_id
@@ -38,6 +38,8 @@ async def upload_chunk_and_index_document(project_id: str, file: UploadFile):
     chunk_result = chunk_document(document_id)
 
     index_result = index_document_chunks(document_id)
+
+    delete_project_chat_cache(project_id)
 
     final_document = get_document_by_id(document_id)
 
