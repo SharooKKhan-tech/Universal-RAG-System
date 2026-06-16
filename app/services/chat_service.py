@@ -10,6 +10,10 @@ from app.services.vector_service import retrieve_chunks
 from app.generation.prompts import build_rag_prompt
 from app.generation.llm_service import generate_answer_with_ollama
 from app.retrieval.query_rewriter import rewrite_query
+from app.services.monitoring_service import (
+    estimate_tokens_from_text,
+    estimate_llm_cost
+)
 
 from app.retrieval.confidence import (
     NO_ANSWER_TEXT,
@@ -37,6 +41,8 @@ def query_log_to_dict(query_log: QueryLog):
         "status": query_log.status,
         "latency_ms": query_log.latency_ms,
         "model_name": query_log.model_name,
+        "estimated_tokens": query_log.estimated_tokens,
+        "estimated_cost": query_log.estimated_cost,
         "created_at": query_log.created_at
     }
 
@@ -120,7 +126,9 @@ def save_query_record(
     model_name: str = "phi3:mini",
     confidence: str | None = None,
     status: str | None = None,
-    top_similarity_score: float | None = None
+    top_similarity_score: float | None = None,
+    estimated_tokens: int = 0,
+    estimated_cost: float = 0.0
 ):
     sources = sources or []
 
@@ -166,6 +174,8 @@ def save_query_record(
             status=final_status,
             latency_ms=latency_ms,
             model_name=model_name,
+            estimated_tokens=estimated_tokens,
+            estimated_cost=estimated_cost,
             created_at=datetime.utcnow()
         )
 
@@ -204,11 +214,15 @@ def answer_question(
             model_name="cache",
             confidence=cached_response.get("confidence"),
             status=cached_response.get("status"),
-            top_similarity_score=cached_response.get("top_similarity_score")
+            top_similarity_score=cached_response.get("top_similarity_score"),
+            estimated_tokens=0,
+            estimated_cost=0.0
         )
 
         cached_response["latency_ms"] = latency_ms
         cached_response["cache_hit"] = True
+        cached_response["estimated_tokens"] = 0
+        cached_response["estimated_cost"] = 0.0
         cached_response["query_id"] = query_record["id"]
 
         return cached_response
@@ -268,7 +282,9 @@ def answer_question(
             "latency_ms": latency_ms,
             "model_name": "phi3:mini",
             "query_id": query_record["id"],
-            "cache_hit": False
+            "cache_hit": False,
+            "estimated_tokens": 0,
+            "estimated_cost": 0.0
         }
 
         set_cached_answer(
@@ -306,7 +322,9 @@ def answer_question(
             "latency_ms": latency_ms,
             "model_name": "phi3:mini",
             "query_id": query_record["id"],
-            "cache_hit": False
+            "cache_hit": False,
+            "estimated_tokens": 0,
+            "estimated_cost": 0.0
         }
 
         set_cached_answer(
@@ -337,6 +355,9 @@ def answer_question(
 
     latency_ms = int((time.time() - start_time) * 1000)
 
+    estimated_tokens = estimate_tokens_from_text(prompt + "\n" + answer)
+    estimated_cost = estimate_llm_cost(estimated_tokens)
+
     query_record = save_query_record(
         project_id=project_id,
         question=question,
@@ -346,7 +367,9 @@ def answer_question(
         model_name="phi3:mini",
         confidence=confidence,
         status=status,
-        top_similarity_score=top_similarity_score
+        top_similarity_score=top_similarity_score,
+        estimated_tokens=estimated_tokens,
+        estimated_cost=estimated_cost
     )
 
     response_payload = {
@@ -358,6 +381,9 @@ def answer_question(
         "cache_hit": False,
         "original_query": question
     }
+
+    response_payload["estimated_tokens"] = estimated_tokens
+    response_payload["estimated_cost"] = estimated_cost
 
     if "confidence" in locals():
         response_payload["confidence"] = confidence

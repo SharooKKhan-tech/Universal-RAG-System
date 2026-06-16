@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlalchemy import (
     String,
     Text,
@@ -6,7 +7,8 @@ from sqlalchemy import (
     Boolean,
     Integer,
     ForeignKey,
-    JSON
+    JSON,
+    Float
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -109,4 +111,19 @@ class QueryLog(Base):
     status: Mapped[str] = mapped_column(String(50), default="answered")
     latency_ms: Mapped[int] = mapped_column(Integer, default=0)
     model_name: Mapped[str] = mapped_column(String(100), default="phi3:mini")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    estimated_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    estimated_cost: Mapped[float] = mapped_column(Float, default=0.0)
+
+class ApiUsageLog(Base):
+    __tablename__ = "api_usage_logs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+    project_id: Mapped[str | None] = mapped_column(String, index=True, nullable=True)
+    api_key_id: Mapped[str | None] = mapped_column(String, index=True, nullable=True)
+    method: Mapped[str] = mapped_column(String(20), nullable=False)
+    path: Mapped[str] = mapped_column(Text, nullable=False)
+    status_code: Mapped[int] = mapped_column(Integer, nullable=False)
+    latency_ms: Mapped[int] = mapped_column(Integer, default=0)
+    request_id: Mapped[str] = mapped_column(String, index=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

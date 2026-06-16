@@ -1,6 +1,7 @@
 from fastapi import Header, HTTPException
 
 from app.services.api_key_service import get_api_key_record
+from app.services.rate_limit_service import check_rate_limit
 
 
 def verify_api_key(x_api_key: str = Header(..., alias="X-API-Key")):
@@ -11,6 +12,8 @@ def verify_api_key(x_api_key: str = Header(..., alias="X-API-Key")):
             status_code=401,
             detail="Invalid or missing API key"
         )
+
+    check_rate_limit(api_key_record)
 
     return api_key_record
 

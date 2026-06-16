@@ -23,5 +23,13 @@ class Settings:
     REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
     REDIS_CACHE_TTL_SECONDS: int = int(os.getenv("REDIS_CACHE_TTL_SECONDS", "3600"))
 
+    RATE_LIMIT_REQUESTS_PER_MINUTE: int = int(
+        os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "60")
+    )
+
+    ESTIMATED_COST_PER_1K_TOKENS: float = float(
+        os.getenv("ESTIMATED_COST_PER_1K_TOKENS", "0.0")
+    )
+
 
 settings = Settings()
