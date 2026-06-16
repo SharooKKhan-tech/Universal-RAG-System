@@ -1,48 +1,27 @@
 import json
 from uuid import uuid4
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from fastapi import HTTPException
+from sqlalchemy import select, delete
 
-from app.services.document_service import get_document_by_id, load_documents, save_documents
+from app.db.models import Document, Chunk
+from app.db.sync_database import SessionLocal
 from app.ingestion.chunker import split_text_into_chunks
-
-DATA_DIR = Path("data")
-CHUNKS_FILE = DATA_DIR / "chunks.json"
+from app.services.document_service import get_document_by_id, update_document_status
 
 
-def ensure_chunk_storage_exists():
-    DATA_DIR.mkdir(exist_ok=True)
-
-    if not CHUNKS_FILE.exists():
-        CHUNKS_FILE.write_text("[]", encoding="utf-8")
-
-
-def load_chunks():
-    ensure_chunk_storage_exists()
-
-    with open(CHUNKS_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def save_chunks(chunks):
-    ensure_chunk_storage_exists()
-
-    with open(CHUNKS_FILE, "w", encoding="utf-8") as file:
-        json.dump(chunks, file, indent=4)
-
-
-def update_document_status(document_id: str, status: str, error_message=None):
-    documents = load_documents()
-
-    for index, document in enumerate(documents):
-        if document["id"] == document_id:
-            documents[index]["status"] = status
-            documents[index]["error_message"] = error_message
-            save_documents(documents)
-            return documents[index]
-
-    return None
+def chunk_to_dict(chunk: Chunk):
+    return {
+        "id": chunk.id,
+        "project_id": chunk.project_id,
+        "document_id": chunk.document_id,
+        "chunk_text": chunk.chunk_text,
+        "chunk_index": chunk.chunk_index,
+        "page_number": chunk.page_number,
+        "vector_id": chunk.vector_id,
+        "created_at": chunk.created_at
+    }
 
 
 def chunk_document(document_id: str):
@@ -75,39 +54,46 @@ def chunk_document(document_id: str):
         if not generated_chunks:
             raise ValueError("No chunks generated from document")
 
-        all_chunks = load_chunks()
+        with SessionLocal() as db:
+            # remove old chunks if re-chunking
+            db.execute(
+                delete(Chunk).where(Chunk.document_id == document_id)
+            )
 
-        # Remove old chunks for this document if re-chunking
-        all_chunks = [
-            chunk for chunk in all_chunks
-            if chunk["document_id"] != document_id
-        ]
+            new_chunk_records = []
 
-        new_chunk_records = []
+            for chunk in generated_chunks:
+                chunk_record = Chunk(
+                    id=str(uuid4()),
+                    project_id=document["project_id"],
+                    document_id=document_id,
+                    chunk_text=chunk["chunk_text"],
+                    chunk_index=chunk["chunk_index"],
+                    page_number=chunk["page_number"],
+                    vector_id=None,
+                    created_at=datetime.utcnow()
+                )
 
-        for chunk in generated_chunks:
-            chunk_record = {
-                "id": str(uuid4()),
-                "project_id": document["project_id"],
-                "document_id": document_id,
-                "chunk_text": chunk["chunk_text"],
-                "chunk_index": chunk["chunk_index"],
-                "page_number": chunk["page_number"],
-                "created_at": datetime.utcnow().isoformat()
-            }
+                db.add(chunk_record)
+                new_chunk_records.append(chunk_record)
 
-            new_chunk_records.append(chunk_record)
+            db.commit()
 
-        all_chunks.extend(new_chunk_records)
-        save_chunks(all_chunks)
+            for chunk_record in new_chunk_records:
+                db.refresh(chunk_record)
+
+            result_chunks = [
+                chunk_to_dict(chunk_record)
+                for chunk_record in new_chunk_records
+            ]
 
         update_document_status(document_id, "chunked")
 
         return {
             "message": "Document chunked successfully",
             "document_id": document_id,
-            "total_chunks": len(new_chunk_records),
-            "chunks": new_chunk_records
+            "total_chunks": len(result_chunks),
+            "chunks": result_chunks
         }
 
     except Exception as error:
@@ -120,18 +106,49 @@ def chunk_document(document_id: str):
 
 
 def get_chunks_by_document(document_id: str):
-    chunks = load_chunks()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(Chunk)
+            .where(Chunk.document_id == document_id)
+            .order_by(Chunk.chunk_index.asc())
+        )
 
-    return [
-        chunk for chunk in chunks
-        if chunk["document_id"] == document_id
-    ]
+        chunks = result.scalars().all()
+
+        return [
+            chunk_to_dict(chunk)
+            for chunk in chunks
+        ]
 
 
 def get_chunks_by_project(project_id: str):
-    chunks = load_chunks()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(Chunk)
+            .where(Chunk.project_id == project_id)
+            .order_by(Chunk.created_at.desc())
+        )
 
-    return [
-        chunk for chunk in chunks
-        if chunk["project_id"] == project_id
-    ]
+        chunks = result.scalars().all()
+
+        return [
+            chunk_to_dict(chunk)
+            for chunk in chunks
+        ]
+
+
+def delete_chunks_by_document(document_id: str):
+    with SessionLocal() as db:
+        existing_chunks = db.execute(
+            select(Chunk).where(Chunk.document_id == document_id)
+        ).scalars().all()
+
+        deleted_count = len(existing_chunks)
+
+        db.execute(
+            delete(Chunk).where(Chunk.document_id == document_id)
+        )
+
+        db.commit()
+
+        return deleted_count

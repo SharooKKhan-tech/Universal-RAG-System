@@ -1,42 +1,25 @@
-import json
 import re
 from uuid import uuid4
 from pathlib import Path
 from datetime import datetime
 from fastapi import UploadFile, HTTPException
+from sqlalchemy import select
 
-from app.services.project_service import get_project_by_id
+from app.db.models import Project, Document
+from app.db.sync_database import SessionLocal
 from app.ingestion.loaders import extract_text_from_file
 
-DATA_DIR = Path("data")
 UPLOADS_DIR = Path("uploads")
+DATA_DIR = Path("data")
 EXTRACTED_TEXT_DIR = DATA_DIR / "extracted_text"
-DOCUMENTS_FILE = DATA_DIR / "documents.json"
 
 SUPPORTED_FILE_TYPES = {"pdf", "txt"}
 
 
 def ensure_document_storage_exists():
-    DATA_DIR.mkdir(exist_ok=True)
     UPLOADS_DIR.mkdir(exist_ok=True)
-    EXTRACTED_TEXT_DIR.mkdir(exist_ok=True)
-
-    if not DOCUMENTS_FILE.exists():
-        DOCUMENTS_FILE.write_text("[]", encoding="utf-8")
-
-
-def load_documents():
-    ensure_document_storage_exists()
-
-    with open(DOCUMENTS_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def save_documents(documents):
-    ensure_document_storage_exists()
-
-    with open(DOCUMENTS_FILE, "w", encoding="utf-8") as file:
-        json.dump(documents, file, indent=4)
+    DATA_DIR.mkdir(exist_ok=True)
+    EXTRACTED_TEXT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def clean_filename(filename: str) -> str:
@@ -46,104 +29,133 @@ def clean_filename(filename: str) -> str:
     return filename
 
 
-async def upload_and_process_document(project_id: str, file: UploadFile):
-    project = get_project_by_id(project_id)
-
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    original_filename = clean_filename(file.filename)
-    file_extension = Path(original_filename).suffix.lower().replace(".", "")
-
-    if file_extension not in SUPPORTED_FILE_TYPES:
-        raise HTTPException(
-            status_code=400,
-            detail="Only PDF and TXT files are supported in Version 1"
-        )
-
-    document_id = str(uuid4())
-
-    project_upload_dir = UPLOADS_DIR / project_id
-    project_upload_dir.mkdir(parents=True, exist_ok=True)
-
-    stored_file_path = project_upload_dir / f"{document_id}_{original_filename}"
-
-    file_bytes = await file.read()
-    stored_file_path.write_bytes(file_bytes)
-
-    document_record = {
-        "id": document_id,
-        "project_id": project_id,
-        "file_name": original_filename,
-        "file_type": file_extension,
-        "file_path": str(stored_file_path),
-        "text_path": None,
-        "status": "processing",
-        "error_message": None,
-        "created_at": datetime.utcnow().isoformat()
+def document_to_dict(document: Document):
+    return {
+        "id": document.id,
+        "project_id": document.project_id,
+        "file_name": document.file_name,
+        "file_type": document.file_type,
+        "file_path": document.file_path,
+        "text_path": document.text_path,
+        "status": document.status,
+        "error_message": document.error_message,
+        "created_at": document.created_at
     }
 
-    documents = load_documents()
-    documents.append(document_record)
-    save_documents(documents)
 
-    try:
-        extracted_text = extract_text_from_file(
+async def upload_and_process_document(project_id: str, file: UploadFile):
+    ensure_document_storage_exists()
+
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
+
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        original_filename = clean_filename(file.filename)
+        file_extension = Path(original_filename).suffix.lower().replace(".", "")
+
+        if file_extension not in SUPPORTED_FILE_TYPES:
+            raise HTTPException(
+                status_code=400,
+                detail="Only PDF and TXT files are supported"
+            )
+
+        document_id = str(uuid4())
+
+        project_upload_dir = UPLOADS_DIR / project_id
+        project_upload_dir.mkdir(parents=True, exist_ok=True)
+
+        stored_file_path = project_upload_dir / f"{document_id}_{original_filename}"
+
+        file_bytes = await file.read()
+        stored_file_path.write_bytes(file_bytes)
+
+        document = Document(
+            id=document_id,
+            project_id=project_id,
+            file_name=original_filename,
+            file_type=file_extension,
             file_path=str(stored_file_path),
-            file_type=file_extension
+            text_path=None,
+            status="processing",
+            error_message=None,
+            created_at=datetime.utcnow()
         )
 
-        if not extracted_text.strip():
-            raise ValueError("No readable text found in document")
+        db.add(document)
+        db.commit()
+        db.refresh(document)
 
-        text_file_path = EXTRACTED_TEXT_DIR / f"{document_id}.txt"
-        text_file_path.write_text(
-            extracted_text,
-            encoding="utf-8",
-            errors="ignore"
-        )
+        try:
+            extracted_text = extract_text_from_file(
+                file_path=str(stored_file_path),
+                file_type=file_extension
+            )
 
-        document_record["text_path"] = str(text_file_path)
-        document_record["status"] = "text_extracted"
+            if not extracted_text.strip():
+                raise ValueError("No readable text found in document")
 
-    except Exception as error:
-        document_record["status"] = "failed"
-        document_record["error_message"] = str(error)
+            text_file_path = EXTRACTED_TEXT_DIR / f"{document_id}.txt"
+            text_file_path.write_text(
+                extracted_text,
+                encoding="utf-8",
+                errors="ignore"
+            )
 
-    documents = load_documents()
+            document.text_path = str(text_file_path)
+            document.status = "text_extracted"
+            document.error_message = None
 
-    for index, document in enumerate(documents):
-        if document["id"] == document_id:
-            documents[index] = document_record
-            break
+        except Exception as error:
+            document.status = "failed"
+            document.error_message = str(error)
 
-    save_documents(documents)
+        db.commit()
+        db.refresh(document)
 
-    return document_record
+        return document_to_dict(document)
 
 
 def get_documents_by_project(project_id: str, status: str | None = None):
-    documents = load_documents()
+    with SessionLocal() as db:
+        query = select(Document).where(Document.project_id == project_id)
 
-    project_documents = [
-        document for document in documents
-        if document["project_id"] == project_id
-    ]
+        if status:
+            query = query.where(Document.status == status)
 
-    if status:
-        project_documents = [
-            document for document in project_documents
-            if document.get("status") == status
+        query = query.order_by(Document.created_at.desc())
+
+        result = db.execute(query)
+        documents = result.scalars().all()
+
+        return [
+            document_to_dict(document)
+            for document in documents
         ]
-
-    return project_documents
 
 
 def get_document_by_id(document_id: str):
-    documents = load_documents()
+    with SessionLocal() as db:
+        document = db.get(Document, document_id)
 
-    for document in documents:
-        if document["id"] == document_id:
-            return document
+        if not document:
+            return None
 
-    return None
+        return document_to_dict(document)
+
+
+def update_document_status(document_id: str, status: str, error_message=None):
+    with SessionLocal() as db:
+        document = db.get(Document, document_id)
+
+        if not document:
+            return None
+
+        document.status = status
+        document.error_message = error_message
+
+        db.commit()
+        db.refresh(document)
+
+        return document_to_dict(document)

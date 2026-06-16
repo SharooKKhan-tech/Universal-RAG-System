@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 from app.services.chunk_service import chunk_document
-from app.services.document_service import get_document_by_id
+from app.services.document_service import get_document_by_id, update_document_status
 from app.services.chunk_service import (
     get_chunks_by_document,
-    update_document_status
+    
 )
 from app.embeddings.local_embeddings import embedding_provider
 from app.vectorstores.chroma_store import vector_store
