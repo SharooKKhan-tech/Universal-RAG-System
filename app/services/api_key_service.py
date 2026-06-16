@@ -1,36 +1,11 @@
-import json
 import secrets
 from uuid import uuid4
-from pathlib import Path
-from datetime import datetime
+from sqlalchemy import select
 from fastapi import HTTPException
 
 from app.db.schemas import ApiKeyCreate
-from app.services.project_service import get_project_by_id
-
-DATA_DIR = Path("data")
-API_KEYS_FILE = DATA_DIR / "api_keys.json"
-
-
-def ensure_api_key_storage_exists():
-    DATA_DIR.mkdir(exist_ok=True)
-
-    if not API_KEYS_FILE.exists():
-        API_KEYS_FILE.write_text("[]", encoding="utf-8")
-
-
-def load_api_keys():
-    ensure_api_key_storage_exists()
-
-    with open(API_KEYS_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def save_api_keys(api_keys):
-    ensure_api_key_storage_exists()
-
-    with open(API_KEYS_FILE, "w", encoding="utf-8") as file:
-        json.dump(api_keys, file, indent=4)
+from app.db.models import Project, ProjectApiKey
+from app.db.sync_database import SessionLocal
 
 
 def generate_api_key_value() -> str:
@@ -44,95 +19,121 @@ def mask_api_key(api_key: str) -> str:
     return f"{api_key[:10]}...{api_key[-4:]}"
 
 
-def create_api_key(project_id: str, api_key_data: ApiKeyCreate):
-    project = get_project_by_id(project_id)
-
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    api_keys = load_api_keys()
-
-    new_api_key = {
-        "id": str(uuid4()),
-        "project_id": project_id,
-        "name": api_key_data.name,
-        "api_key": generate_api_key_value(),
-        "is_active": True,
-        "created_at": datetime.utcnow().isoformat()
+def api_key_to_dict(api_key: ProjectApiKey, include_full_key: bool = False):
+    data = {
+        "id": api_key.id,
+        "project_id": api_key.project_id,
+        "name": api_key.name,
+        "is_active": api_key.is_active,
+        "created_at": api_key.created_at
     }
 
-    api_keys.append(new_api_key)
-    save_api_keys(api_keys)
+    if include_full_key:
+        data["api_key"] = api_key.api_key
+    else:
+        data["api_key_preview"] = mask_api_key(api_key.api_key)
 
-    return new_api_key
+    return data
+
+
+def create_api_key(project_id: str, api_key_data: ApiKeyCreate):
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
+
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        new_api_key = ProjectApiKey(
+            id=str(uuid4()),
+            project_id=project_id,
+            name=api_key_data.name,
+            api_key=generate_api_key_value(),
+            is_active=True
+        )
+
+        db.add(new_api_key)
+        db.commit()
+        db.refresh(new_api_key)
+
+        return api_key_to_dict(new_api_key, include_full_key=True)
 
 
 def get_api_keys_by_project(project_id: str):
-    api_keys = load_api_keys()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(ProjectApiKey)
+            .where(ProjectApiKey.project_id == project_id)
+            .order_by(ProjectApiKey.created_at.desc())
+        )
 
-    project_keys = [
-        api_key for api_key in api_keys
-        if api_key["project_id"] == project_id
-    ]
+        api_keys = result.scalars().all()
 
-    safe_keys = []
-
-    for api_key in project_keys:
-        safe_keys.append({
-            "id": api_key["id"],
-            "project_id": api_key["project_id"],
-            "name": api_key["name"],
-            "api_key_preview": mask_api_key(api_key["api_key"]),
-            "is_active": api_key["is_active"],
-            "created_at": api_key["created_at"]
-        })
-
-    return safe_keys
+        return [
+            api_key_to_dict(api_key, include_full_key=False)
+            for api_key in api_keys
+        ]
 
 
 def get_api_key_record(api_key_value: str):
-    api_keys = load_api_keys()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(ProjectApiKey)
+            .where(ProjectApiKey.api_key == api_key_value)
+            .where(ProjectApiKey.is_active == True)
+        )
 
-    for api_key in api_keys:
-        if api_key["api_key"] == api_key_value and api_key["is_active"]:
-            return api_key
+        api_key = result.scalar_one_or_none()
 
-    return None
+        if not api_key:
+            return None
+
+        return {
+            "id": api_key.id,
+            "project_id": api_key.project_id,
+            "name": api_key.name,
+            "api_key": api_key.api_key,
+            "is_active": api_key.is_active,
+            "created_at": api_key.created_at
+        }
 
 
 def delete_api_key(project_id: str, api_key_id: str):
-    api_keys = load_api_keys()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(ProjectApiKey)
+            .where(ProjectApiKey.id == api_key_id)
+            .where(ProjectApiKey.project_id == project_id)
+        )
 
-    updated_api_keys = []
-    deleted = False
+        api_key = result.scalar_one_or_none()
 
-    for api_key in api_keys:
-        if api_key["id"] == api_key_id and api_key["project_id"] == project_id:
-            deleted = True
-            continue
+        if not api_key:
+            return False
 
-        updated_api_keys.append(api_key)
+        db.delete(api_key)
+        db.commit()
 
-    if not deleted:
-        return False
+        return True
 
-    save_api_keys(updated_api_keys)
-    return True
 
 def delete_api_keys_by_project(project_id: str):
-    api_keys = load_api_keys()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(ProjectApiKey)
+            .where(ProjectApiKey.project_id == project_id)
+        )
 
-    remaining_api_keys = [
-        api_key for api_key in api_keys
-        if api_key["project_id"] != project_id
-    ]
+        api_keys = result.scalars().all()
 
-    deleted_count = len(api_keys) - len(remaining_api_keys)
+        deleted_count = len(api_keys)
 
-    save_api_keys(remaining_api_keys)
+        for api_key in api_keys:
+            db.delete(api_key)
 
-    return {
-        "message": "Project API keys deleted successfully",
-        "project_id": project_id,
-        "deleted_count": deleted_count
-    }
+        db.commit()
+
+        return {
+            "message": "Project API keys deleted successfully",
+            "project_id": project_id,
+            "deleted_count": deleted_count
+        }

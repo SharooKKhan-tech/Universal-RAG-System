@@ -1,0 +1,22 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+class Settings:
+    PROJECT_NAME: str = "Universal RAG System"
+    API_V1_PREFIX: str = "/api/v1"
+
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://postgres:root@localhost:5432/universal_rag_db"
+    )
+
+    SYNC_DATABASE_URL: str = DATABASE_URL.replace(
+        "postgresql+asyncpg",
+        "postgresql+psycopg2"
+    )
+
+
+settings = Settings()

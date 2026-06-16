@@ -2,11 +2,10 @@ import shutil
 from pathlib import Path
 from fastapi import HTTPException
 
-from app.services.project_service import (
-    get_project_by_id,
-    load_projects,
-    save_projects
-)
+from app.db.models import Project
+from app.db.sync_database import SessionLocal
+
+from app.services.project_service import get_project_by_id
 from app.services.document_service import get_documents_by_project
 from app.services.document_management_service import delete_document_completely
 from app.services.api_key_service import delete_api_keys_by_project
@@ -26,20 +25,20 @@ def delete_project_upload_folder(project_id: str):
 
 
 def delete_project_record(project_id: str):
-    projects = load_projects()
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
 
-    remaining_projects = [
-        project for project in projects
-        if project["id"] != project_id
-    ]
+        if not project:
+            return {
+                "deleted_count": 0
+            }
 
-    deleted_count = len(projects) - len(remaining_projects)
+        db.delete(project)
+        db.commit()
 
-    save_projects(remaining_projects)
-
-    return {
-        "deleted_count": deleted_count
-    }
+        return {
+            "deleted_count": 1
+        }
 
 
 def delete_project_completely(project_id: str):
@@ -57,16 +56,16 @@ def delete_project_completely(project_id: str):
         result = delete_document_completely(document["id"])
         deleted_documents.append(result)
 
-    # 2. Delete API keys
+    # 2. Delete API keys from PostgreSQL
     api_key_result = delete_api_keys_by_project(project_id)
 
-    # 3. Delete query history
+    # 3. Delete query history from current JSON query storage
     query_result = delete_queries_by_project(project_id)
 
     # 4. Delete project upload folder if still exists
     upload_folder_deleted = delete_project_upload_folder(project_id)
 
-    # 5. Delete project record
+    # 5. Delete project record from PostgreSQL
     project_record_result = delete_project_record(project_id)
 
     return {

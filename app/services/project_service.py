@@ -1,74 +1,68 @@
-import json
 from uuid import uuid4
-from pathlib import Path
-from datetime import datetime
+from sqlalchemy import select
+
 from app.db.schemas import ProjectCreate
-
-DATA_DIR = Path("data")
-PROJECTS_FILE = DATA_DIR / "projects.json"
-
-
-def ensure_storage_exists():
-    DATA_DIR.mkdir(exist_ok=True)
-
-    if not PROJECTS_FILE.exists():
-        PROJECTS_FILE.write_text("[]")
+from app.db.models import Project
+from app.db.sync_database import SessionLocal
 
 
-def load_projects():
-    ensure_storage_exists()
-
-    with open(PROJECTS_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def save_projects(projects):
-    ensure_storage_exists()
-
-    with open(PROJECTS_FILE, "w", encoding="utf-8") as file:
-        json.dump(projects, file, indent=4)
+def project_to_dict(project: Project):
+    return {
+        "id": project.id,
+        "name": project.name,
+        "description": project.description,
+        "created_at": project.created_at
+    }
 
 
 def create_project(project_data: ProjectCreate):
-    projects = load_projects()
+    with SessionLocal() as db:
+        new_project = Project(
+            id=str(uuid4()),
+            name=project_data.name,
+            description=project_data.description,
+            client_id=None
+        )
 
-    new_project = {
-        "id": str(uuid4()),
-        "name": project_data.name,
-        "description": project_data.description,
-        "created_at": datetime.utcnow().isoformat()
-    }
+        db.add(new_project)
+        db.commit()
+        db.refresh(new_project)
 
-    projects.append(new_project)
-    save_projects(projects)
-
-    return new_project
+        return project_to_dict(new_project)
 
 
 def get_all_projects():
-    return load_projects()
+    with SessionLocal() as db:
+        result = db.execute(
+            select(Project).order_by(Project.created_at.desc())
+        )
+
+        projects = result.scalars().all()
+
+        return [
+            project_to_dict(project)
+            for project in projects
+        ]
 
 
 def get_project_by_id(project_id: str):
-    projects = load_projects()
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
 
-    for project in projects:
-        if project["id"] == project_id:
-            return project
+        if not project:
+            return None
 
-    return None
+        return project_to_dict(project)
 
 
 def delete_project(project_id: str):
-    projects = load_projects()
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
 
-    updated_projects = [
-        project for project in projects
-        if project["id"] != project_id
-    ]
+        if not project:
+            return False
 
-    if len(projects) == len(updated_projects):
-        return False
+        db.delete(project)
+        db.commit()
 
-    save_projects(updated_projects)
-    return True
+        return True

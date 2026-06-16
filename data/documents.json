@@ -42,5 +42,16 @@
         "status": "indexed",
         "error_message": null,
         "created_at": "2026-06-12T09:52:48.123572"
+    },
+    {
+        "id": "992e2220-5683-4900-a374-b7d6acb4e68b",
+        "project_id": "fdd77353-39d1-46ec-b862-db62107d903c",
+        "file_name": "Medi-Scan_Privacy_Policy_Professional.pdf",
+        "file_type": "pdf",
+        "file_path": "uploads\\fdd77353-39d1-46ec-b862-db62107d903c\\992e2220-5683-4900-a374-b7d6acb4e68b_Medi-Scan_Privacy_Policy_Professional.pdf",
+        "text_path": "data\\extracted_text\\992e2220-5683-4900-a374-b7d6acb4e68b.txt",
+        "status": "indexed",
+        "error_message": null,
+        "created_at": "2026-06-16T05:54:23.255794"
     }
 ]

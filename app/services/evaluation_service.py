@@ -242,7 +242,8 @@ def evaluate_single_test_case(project_id: str, test_case: dict):
         "was_query_rewritten": response.get("was_query_rewritten"),
         "rewritten_query": response.get("rewritten_query"),
         "rerank": response.get("rerank"),
-        "passed": passed
+        "passed": passed,
+        "failure_reasons": failure_reasons
     }
 
 
