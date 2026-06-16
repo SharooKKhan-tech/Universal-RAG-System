@@ -10,6 +10,11 @@ from app.services.pipeline_service import upload_chunk_and_index_document
 from app.services.document_management_service import delete_document_completely
 from app.services.vector_service import reindex_document_chunks
 from app.core.security import verify_api_key, ensure_project_access
+from fastapi import BackgroundTasks
+from app.services.background_pipeline_service import (
+    upload_document_for_background_processing,
+    process_document_in_background
+)
 
 router = APIRouter()
 
@@ -90,3 +95,24 @@ def delete_document(
     ensure_project_access(api_key_record, document["project_id"])
 
     return delete_document_completely(document_id)
+
+@router.post("/documents/upload-background")
+async def upload_document_background(
+    background_tasks: BackgroundTasks,
+    project_id: str = Form(...),
+    file: UploadFile = File(...),
+    api_key_record: dict = Depends(verify_api_key)
+):
+    ensure_project_access(api_key_record, project_id)
+
+    result = await upload_document_for_background_processing(
+        project_id=project_id,
+        file=file
+    )
+
+    background_tasks.add_task(
+        process_document_in_background,
+        result["document_id"]
+    )
+
+    return result

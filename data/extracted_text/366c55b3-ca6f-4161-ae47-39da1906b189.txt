@@ -1,0 +1,46 @@
+
+--- Page 1 ---
+Sharook Khan Pathan
+Guntur,Andhra Pradesh
++91-8919687218 sharookkhanpathan626@gmail.com Linkedin Github
+SUMMARY
+Recent graduate with hands-on experience in AI application development, FastAPI, Python, PostgreSQL, and Large
+Language Models (LLMs). Currently working as an AI/LLM Intern at Coastal Seven Technologies, contributing to
+the development of an AI University ERP Copilot using RAG architecture and modern AI technologies. Passionate
+about backend development, machine learning, and building scalable AI-powered applications.
+TECHNICAL SKILLS
+Languages: Java , C , Python
+T ools & T echnologies:VS Code, Git, Github, Postman
+AI: Large Language Models (LLMs),Retrieval-Augmented Generation (RAG),Prompt Engineering
+Backend Development:FastAPI, REST APIs, SQLAlchemy
+Libraries: Streamlit, Numpy, Pandas, Scikit-learn
+Databases: MySQL, PostgreSQL
+EXPERIENCE
+Coastal Seven Technologies Apr 2026 – Present
+AI/LLM Intern
+• Contributing to the development of an AI-powered University ERP Copilot for students, faculty, and
+administrators.
+• Developed document ingestion and retrieval workflows using RAG architecture.
+• Built backend APIs using FastAPI for AI-powered question-answering services.
+• Implemented semantic search using embeddings and vector databases.
+• Collaborated with development teams using Git and Agile workflows.
+PROJECTS
+Customer Churn Prediction
+• Developed a customer churn prediction model with 98% accuracy using machine learning algorithms (Random
+Forest, XGBoost) to identify potential churners
+• Engineered features from imbalanced data and utilized SMOTE to improve model performance, effectively detecting
+churn risks.
+MultiModel Data Processing System
+• Developed a Multimodal Data Processing System capable of extracting and analyzing text, audio, and visual data
+from various file formats (PDF, DOCX, PPTX, images, audio, video) using Python, OCR, and speech-to-text
+models..
+• Implemented semantic search and natural language querying using embeddings and ChromaDB, enabling
+context-aware answers with source-based citations through an integrated LLM-powered interface..
+AI University ERP Copilot
+• Built an enterprise-grade AI Copilot leveraging RAG, embeddings, and LLMs to provide real-time, context-aware
+assistance across university operations.
+• Developed end-to-end AI workflows including document ingestion, semantic search, knowledge retrieval, and
+conversational question-answering using Python and FastAPI.
+EDUCATION
+Vasireddy Venkatadri Institute of Technology 2021–2025
+Bachelor of Technology(Computer Science) -CGPA - 7.8 Guntur, Andhra Pradesh
