@@ -1,0 +1,323 @@
+
+--- Page 1 ---
+Medi-Scan Privacy Policy
+Page 1
+ Medi-Scan
+ Privacy Policy
+ AI-Powered Smart Health Companion
+ Updated: [Insert Date]
+ Effective Date: [Insert Date]
+ Legal Name: [Insert Company / Developer Legal Name]
+This Privacy Policy explains how Medi-Scan collects, uses, stores, shares, and protects personal information,
+health information, medical documents, location information, payment-related information, and app usage data
+when users access Medi-Scan mobile application services.
+Important: Medi-Scan is not a substitute for a doctor, pharmacist, hospital, laboratory, emergency service,
+or licensed healthcare professional. AI explanations and suggestions are informational only.
+
+
+--- Page 2 ---
+Medi-Scan Privacy Policy
+Page 2
+Coverage Checklist
+The following table confirms that the key privacy policy requirements requested for Medi-Scan are included in this
+document.
+Requirement
+Status
+Where Included
+Information We Collect
+Included
+Section 4
+Location Usage
+Included
+Section 5
+Data Sharing
+Included
+Section 8
+Payments
+Included
+Section 6
+Account Deletion
+Included
+Section 12
+Legal and Support
+Included
+Sections 14 and 20
+Age Restriction
+Included
+Section 13
+Table of Contents
+1. Introduction
+2. Medical Disclaimer
+3. Definitions and Scope
+4. Information We Collect
+5. Location Usage
+6. Payments
+7. How We Use Information
+8. Data Sharing
+9. App Permissions
+10. Data Storage and Security
+11. Data Retention
+12. Account Deletion
+13. Age Restriction and Children's Privacy
+14. Legal, Compliance, and Safety
+15. AI Processing and Health Insights
+16. User Rights and Choices
+17. Third-Party Services
+18. Changes to This Policy
+19. Additional Notice for Users in India
+20. Contact and Support
+
+
+--- Page 3 ---
+Medi-Scan Privacy Policy
+Page 3
+1. Introduction
+This Privacy Policy explains how Medi-Scan ("Medi-Scan", "we", "our", or "us") collects, uses, stores, shares, and
+protects information when you use our mobile application, website, AI assistant, document scanning tools,
+medication reminder system, emergency alert features, and related services collectively referred to as the
+"Services".
+Medi-Scan is an AI-powered smart health companion designed to help users digitize prescriptions, understand
+blood test reports, manage medicine reminders, maintain health records, calculate BMI, track medication
+adherence, receive diet suggestions, and ask health-related questions through MediBot.
+2. Medical Disclaimer
+Medi-Scan provides informational and organizational support only. It does not provide medical diagnosis,
+treatment, prescription decisions, emergency care, or professional medical advice.
+AI-generated report explanations, prescription summaries, safety checks, dietary recommendations, and MediBot
+responses may be incomplete or inaccurate. You must consult a qualified doctor, pharmacist, or healthcare
+provider before making medical decisions, changing medication, stopping medication, or relying on health
+suggestions.
+In a medical emergency, contact local emergency services immediately.
+3. Definitions and Scope
+Personal Data means information that identifies or can reasonably identify an individual, such as name, email
+address, phone number, account details, device information, or location information.
+Health Data means information related to physical or medical condition, prescriptions, medicines, dosage, lab
+reports, diagnostic values, BMI, weight, symptoms, medicine history, allergies, health profile, or wellness data.
+Medical Documents means prescriptions, blood test reports, lab report PDFs, images, doctor notes, medical
+slips, and other health-related files uploaded or scanned through Medi-Scan.
+This Policy applies to Medi-Scan users who access or use our Services. It does not apply to third-party websites,
+hospitals, labs, doctors, pharmacies, payment providers, or external services that have their own privacy policies.
+4. Information We Collect
+Medi-Scan collects information necessary to provide health document scanning, medication tracking, reminders,
+emergency alerts, AI assistance, and account security.
+4.1 Account and Contact Information
+●
+Name, email address, phone number, OTP verification details, account preferences, login activity, and support
+communications.
+●
+Device identifiers and security logs used to protect your account and prevent unauthorized access.
+4.2 Health and Medical Information
+●
+Prescription images, extracted medicine names, dosages, timing, frequency, doctor instructions, and critical
+medicine settings.
+●
+Blood test reports, lab markers, diagnostic values, report summaries, trends, and possible concern indicators.
+
+
+--- Page 4 ---
+Medi-Scan Privacy Policy
+Page 4
+●
+Medical history, health conditions, allergies, supplements, vitamins, adherence records, missed dose history,
+BMI, height, weight, and diet-related preferences that you choose to provide.
+4.3 Documents, Camera, Gallery, and Files
+●
+Prescription photos, lab report images, PDF reports, uploaded records, and extracted text from those
+documents.
+●
+Camera, gallery, and file access are used only when you choose to scan or upload a medical document.
+4.4 Reminder, Notification, and App Usage Information
+●
+Medicine schedules, reminder times, snooze actions, Take Now confirmations, missed doses, adherence
+streaks, and calendar progress.
+●
+App version, device model, operating system, crash logs, error logs, feature usage events, and technical
+diagnostics.
+4.5 Emergency Contact Information
+●
+Emergency contact name, phone number, email address, relationship label if provided, critical medication
+settings, and missed-dose alert history.
+●
+You are responsible for ensuring that your emergency contact agrees to receive emergency alerts from
+Medi-Scan.
+5. Location Usage
+Medi-Scan may collect and use your location only when location-based features are enabled and permission is
+granted by you. The primary location feature is emergency missed-dose alerting for critical medications.
+If a critical dose is missed and emergency alerts are enabled, Medi-Scan may include your last known GPS
+location or approximate location in the alert sent to your selected emergency contact.
+Medi-Scan does not use location for advertising. You can disable location permission through device settings, but
+emergency missed-dose alerts may not include location after permission is disabled.
+6. Payments
+If Medi-Scan offers paid subscriptions, premium features, consultations, reports, or in-app purchases, payment
+processing may be handled by third-party payment processors, app stores, or billing providers.
+Medi-Scan does not store full credit card numbers, debit card numbers, CVV, UPI PINs, banking passwords, or
+complete payment credentials on our own servers. Payment providers may collect billing name, payment method
+details, transaction amount, invoice information, tax information, and payment status according to their own privacy
+policies.
+We may store limited payment-related records such as subscription status, transaction ID, plan type, purchase
+date, renewal date, refund status, and billing support communications to manage accounts, comply with legal
+obligations, and provide customer support.
+7. How We Use Information
+We use collected information to operate, secure, personalize, and improve Medi-Scan.
+●
+Create and manage user accounts, verify OTP login, and provide customer support.
+
+
+--- Page 5 ---
+Medi-Scan Privacy Policy
+Page 5
+●
+Scan prescriptions, extract medicine names, dosage, and timing, and allow user confirmation before saving.
+●
+Interpret blood test reports in plain language and track health trends over time.
+●
+Create medication reminders, full-screen alarms, snooze alerts, adherence logs, streaks, and calendar views.
+●
+Provide MediBot AI responses based on user-provided prescriptions, reports, and medical history.
+●
+Generate personalized diet suggestions and possible food-medicine interaction alerts.
+●
+Detect duplicate medicines, possible safety mismatches, and situations where expert review is recommended.
+●
+Send emergency missed-dose alerts when enabled by the user.
+●
+Improve app reliability, security, OCR quality, AI response quality, and user experience.
+8. Data Sharing
+We do not sell personal health information, prescriptions, medical reports, medication history, emergency contact
+information, or location information. We share information only as needed to provide Medi-Scan services, protect
+users, comply with law, or complete business operations.
+8.1 Service Providers
+We may share limited information with trusted providers that help us operate the app, including cloud hosting,
+databases, OTP delivery, push notifications, AI/OCR processing, email delivery, analytics, crash reporting,
+customer support, security monitoring, and payment processing.
+8.2 Emergency Contacts
+If you enable emergency alerts, we may share missed critical dose information and last known location with your
+selected emergency contact.
+8.3 Healthcare Providers, Caregivers, or Family Members
+We share health records with doctors, caregivers, family members, or other people only when you choose to share
+them or use a feature that sends information to them.
+8.4 Legal, Safety, and Business Transfers
+We may disclose information if required by law, legal process, regulatory request, safety concern, fraud prevention
+need, security incident, enforcement of our terms, merger, acquisition, restructuring, or sale of assets.
+9. App Permissions
+Permission
+Purpose
+Camera
+To scan prescriptions, reports, and medical documents.
+Photos, Gallery, Files, or Storage
+To upload prescription images, PDFs, lab reports, and health records.
+Notifications
+To send medicine reminders, full-screen alarms, snooze alerts, and critical dose notifications.
+Location
+To include last known location in emergency missed-dose alerts, only when enabled and permitted.
+Contacts
+If used, to help select an emergency contact. Medi-Scan does not upload the full contact list unless clearly disclosed and consented to.
+Internet
+To sync account data, process AI features, deliver OTPs, store records securely, and operate cloud services.
+
+
+--- Page 6 ---
+Medi-Scan Privacy Policy
+Page 6
+You can manage app permissions through your device settings. Some features may not function properly if
+required permissions are disabled.
+10. Data Storage and Security
+We use reasonable technical and organizational safeguards to protect user information, including secure
+transmission, secure storage, OTP authentication, access controls, encryption where appropriate, monitoring, and
+limited access to sensitive data.
+Because no electronic system is completely secure, we cannot guarantee absolute security. You are responsible
+for keeping your device, phone number, email account, and app access secure.
+11. Data Retention
+We retain information only for as long as necessary to provide Medi-Scan services, comply with law, resolve
+disputes, prevent fraud or misuse, maintain backups, and improve security.
+Medical records are retained until you delete them or close your account, unless longer retention is required or
+permitted by law. Reminder history, adherence logs, emergency contact details, and location alerts are retained
+only as needed for the relevant features. Technical logs may be retained for a limited period for security and
+debugging.
+12. Account Deletion
+You may request deletion of your Medi-Scan account through the in-app account deletion option, if available, or by
+contacting us at [Insert Privacy / Support Email].
+After a verified deletion request, we will delete or anonymize personal data, health data, uploaded documents,
+medication history, reminder data, emergency contact details, and account information unless retention is required
+for legal, security, fraud prevention, backup, dispute resolution, tax, accounting, or legitimate business purposes
+permitted by law.
+Some deleted information may remain in encrypted backups for a limited period before permanent removal.
+13. Age Restriction and Children's Privacy
+Medi-Scan is intended for users who are at least 18 years old. Users under 18 may use the Services only with the
+involvement and consent of a parent or legal guardian, where permitted by law.
+We do not knowingly collect personal or health information from children without appropriate consent. If we learn
+that we collected such information without required consent, we will take reasonable steps to delete it.
+Parents or guardians may contact us to request access, correction, or deletion of a child's data.
+14. Legal, Compliance, and Safety
+We may process or disclose information when necessary to comply with applicable laws, regulations, court orders,
+government requests, tax or accounting requirements, safety obligations, fraud prevention, security investigations,
+enforcement of terms, or protection of rights, property, and users.
+Where applicable, Medi-Scan may process personal data in accordance with data protection laws such as the
+Digital Personal Data Protection Act, 2023 in India and other applicable privacy laws based on user location.
+For legal notices, privacy concerns, complaints, or data requests, contact: [Insert Legal / Privacy Email].
+
+
+--- Page 7 ---
+Medi-Scan Privacy Policy
+Page 7
+15. AI Processing and Health Insights
+Medi-Scan uses AI technologies such as OCR, handwriting recognition, text extraction, natural language
+processing, retrieval-based context, and AI-assisted summarization to support prescription scanning, lab report
+explanation, MediBot responses, diet suggestions, duplicate medicine checks, and safety alerts.
+Unless we separately ask for your permission, we do not use identifiable prescriptions, medical reports, health
+records, or personal health data to train public AI models. We may use anonymized or aggregated data to improve
+reliability, safety, and performance where permitted by law.
+AI results should be reviewed carefully. Users must verify extracted medicines, dosages, timings, report values,
+and emergency contact settings before relying on them.
+16. User Rights and Choices
+Depending on applicable law and your location, you may have rights to access, correct, delete, export, restrict,
+object to, or withdraw consent for certain processing of your personal data.
+●
+Access and review personal data and health records stored in your account.
+●
+Correct inaccurate account, medicine, report, or emergency contact information.
+●
+Delete uploaded records, prescriptions, reports, reminders, or your entire account.
+●
+Withdraw consent for optional features such as notifications, location sharing, emergency alerts, and AI
+personalization.
+●
+Disable permissions from device settings, including camera, files, notifications, location, and contacts.
+●
+Contact support for privacy requests, complaints, or account assistance.
+17. Third-Party Services
+Medi-Scan may use or link to third-party services such as cloud hosting providers, payment processors, app
+stores, laboratories, doctors, pharmacies, analytics providers, AI/OCR providers, and support platforms.
+Third-party services may have their own privacy policies and terms. Medi-Scan is not responsible for privacy
+practices of services that we do not own or control.
+18. Changes to This Policy
+We may update this Privacy Policy from time to time. If we make significant changes, we will notify users through
+the app, website, email, or another appropriate method. The updated policy will be effective from the date shown
+at the top of this document.
+19. Additional Notice for Users in India
+If you are located in India, your personal data may be processed in accordance with applicable Indian privacy laws,
+including the Digital Personal Data Protection Act, 2023 and applicable rules.
+You may have rights to access information, correct personal data, request deletion, withdraw consent, raise
+grievances, and nominate another person to exercise rights in case of death or incapacity, where applicable. To
+exercise these rights, contact us at [Insert Privacy / Support Email].
+
+
+--- Page 8 ---
+Medi-Scan Privacy Policy
+Page 8
+20. Contact and Support
+For privacy questions, account deletion requests, legal notices, support requests, complaints, or data rights
+requests, contact Medi-Scan using the details below.
+Medi-Scan Privacy / Support Team
+[Insert Team / Department Name]
+Legal Name
+[Insert Company / Developer Legal Name]
+Privacy Email
+[Insert Privacy Email]
+Support Email
+[Insert Support Email]
+Business Address
+[Insert Business Address]
+Grievance Officer / Data Protection Contact
+[Insert Name and Contact, if applicable]
+This document is a professional draft and should be reviewed by a qualified legal professional before publication, especially
+because Medi-Scan processes health data and other sensitive information.

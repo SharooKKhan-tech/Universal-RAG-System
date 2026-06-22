@@ -4,7 +4,7 @@ from statistics import mean
 from sqlalchemy import select, func
 
 from app.core.config import settings
-from app.db.models import ApiUsageLog, QueryLog
+from app.db.models import ApiUsageLog, QueryLog, Document, Chunk
 from app.db.sync_database import SessionLocal
 
 
@@ -67,6 +67,16 @@ def get_project_usage_summary(project_id: str):
         total_requests = len(request_logs)
         total_queries = len(query_logs)
 
+        total_documents = db.execute(
+            select(func.count(Document.id))
+            .where(Document.project_id == project_id)
+        ).scalar() or 0
+
+        total_chunks = db.execute(
+            select(func.count(Chunk.id))
+            .where(Chunk.project_id == project_id)
+        ).scalar() or 0
+
         request_latencies = [
             log.latency_ms
             for log in request_logs
@@ -117,6 +127,8 @@ def get_project_usage_summary(project_id: str):
             "project_id": project_id,
             "total_api_requests": total_requests,
             "total_chat_queries": total_queries,
+            "total_documents": total_documents,
+            "total_chunks": total_chunks,
             "average_api_latency_ms": round(mean(request_latencies), 2) if request_latencies else 0,
             "average_chat_latency_ms": round(mean(query_latencies), 2) if query_latencies else 0,
             "status_code_counts": status_counts,

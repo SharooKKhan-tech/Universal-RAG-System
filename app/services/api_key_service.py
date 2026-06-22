@@ -69,7 +69,7 @@ def get_api_keys_by_project(project_id: str):
         api_keys = result.scalars().all()
 
         return [
-            api_key_to_dict(api_key, include_full_key=False)
+            api_key_to_dict(api_key, include_full_key=True)
             for api_key in api_keys
         ]
 

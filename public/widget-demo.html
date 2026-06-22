@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Chat Widget — Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #e2e8f0;
+      gap: 32px;
+      padding: 40px 24px;
+    }
+    .hero { text-align: center; max-width: 560px; }
+    .hero h1 {
+      font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #38bdf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .hero p { color: #94a3b8; font-size: 1.05rem; line-height: 1.6; }
+
+    .card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      padding: 28px 32px;
+      width: 100%; max-width: 580px;
+    }
+    .card h2 { font-size: 1rem; color: #38bdf8; margin-bottom: 16px; letter-spacing: .05em; text-transform: uppercase; font-weight: 700; }
+    pre {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 13px;
+      overflow-x: auto;
+      color: #a5f3fc;
+      line-height: 1.7;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(99,102,241,.2); border: 1px solid rgba(99,102,241,.4);
+      color: #818cf8; border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 600;
+    }
+    .features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+    .feature {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 13px; color: #cbd5e1; line-height: 1.5;
+    }
+    .feature strong { display: block; color: #e2e8f0; margin-bottom: 4px; }
+    .arrow {
+      position: fixed;
+      bottom: 100px; right: 32px;
+      color: #818cf8; font-size: 13px; font-weight: 600;
+      animation: arrow-bounce 1.5s infinite;
+      pointer-events: none;
+    }
+    @keyframes arrow-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="badge">🚀 Universal RAG System</div>
+    <h1 style="margin-top:16px">Embeddable Chat Widget</h1>
+    <p>Add AI-powered document search to any website with a single <code>&lt;script&gt;</code> tag.
+       The floating chat button (bottom-right ↘) is live — try asking it anything!</p>
+  </div>
+
+  <div class="card">
+    <h2>Quick Embed</h2>
+    <pre><code>&lt;script
+  src="http://localhost:8000/widget.js"
+  data-widget-key="<span id="demo-key">YOUR_WIDGET_PUBLIC_KEY</span>"
+  data-position="bottom-right"
+&gt;&lt;/script&gt;</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Features</h2>
+    <div class="features">
+      <div class="feature"><strong>🔑 Public Key Auth</strong>No secret keys exposed in browser</div>
+      <div class="feature"><strong>⚡ SSE Streaming</strong>Tokens appear in real-time as the LLM generates</div>
+      <div class="feature"><strong>📄 Source Citations</strong>Every answer shows which documents it came from</div>
+      <div class="feature"><strong>🎨 Fully Customisable</strong>Colours, title, welcome message, position</div>
+      <div class="feature"><strong>🛡️ Domain Isolation</strong>Restrict widget to specific domains</div>
+      <div class="feature"><strong>📊 Usage Tracked</strong>All queries logged to your analytics dashboard</div>
+    </div>
+  </div>
+
+  <div class="arrow">↗ Chat widget →</div>
+
+  <!-- Widget injection — replace YOUR_WIDGET_PUBLIC_KEY with a real key -->
+  <script
+    id="rag-widget-script"
+    src="http://localhost:8000/widget.js"
+    data-widget-key="REPLACE_WITH_REAL_KEY"
+    data-position="bottom-right"
+    data-api-base="http://localhost:8000/api/v1"
+  ></script>
+
+  <script>
+    // Show the key in the embed snippet for demo purposes
+    const key = document.getElementById('rag-widget-script').getAttribute('data-widget-key');
+    document.getElementById('demo-key').textContent = key;
+  </script>
+</body>
+</html>

@@ -63,11 +63,12 @@ def chunk_document(document_id: str):
             new_chunk_records = []
 
             for chunk in generated_chunks:
+                chunk_text_with_prefix = f"Document: {document['file_name']}\n\n{chunk['chunk_text']}"
                 chunk_record = Chunk(
                     id=str(uuid4()),
                     project_id=document["project_id"],
                     document_id=document_id,
-                    chunk_text=chunk["chunk_text"],
+                    chunk_text=chunk_text_with_prefix,
                     chunk_index=chunk["chunk_index"],
                     page_number=chunk["page_number"],
                     vector_id=None,

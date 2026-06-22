@@ -31,5 +31,25 @@ class Settings:
         os.getenv("ESTIMATED_COST_PER_1K_TOKENS", "0.0")
     )
 
+    SECRET_KEY: str = os.getenv(
+        "SECRET_KEY",
+        "super_secret_key_change_me_in_production_12345678"
+    )
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
+        os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
+    )
+    ALGORITHM: str = "HS256"
+
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "phi3:mini")
+
+    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
+    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+
+    DEFAULT_LLM_PROVIDER: str = os.getenv("DEFAULT_LLM_PROVIDER", "ollama")
+    DEFAULT_MODEL_NAME: str = os.getenv("DEFAULT_MODEL_NAME", "phi3:mini")
 
 settings = Settings()

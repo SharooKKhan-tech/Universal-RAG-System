@@ -75,3 +75,55 @@ class EvaluationTestCaseCreate(BaseModel):
 
 class EvaluationRunRequest(BaseModel):
     test_case_ids: Optional[List[str]] = None
+
+class UserRegister(BaseModel):
+    name: str = Field(..., min_length=2, max_length=150)
+    email: str = Field(..., min_length=5, max_length=150)
+    password: str = Field(..., min_length=6, max_length=100)
+    company_name: str = Field(..., min_length=2, max_length=150)
+
+class UserLogin(BaseModel):
+    email: str = Field(...)
+    password: str = Field(...)
+
+class UserResponse(BaseModel):
+    id: str
+    client_id: Optional[str] = None
+    name: str
+    email: str
+    role: str
+    is_active: bool
+    created_at: datetime
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserResponse
+
+class UserInvite(BaseModel):
+    email: str
+    name: str
+    role: Literal["CLIENT_ADMIN", "PROJECT_ADMIN", "DEVELOPER", "VIEWER", "END_USER"]
+    project_ids: Optional[List[str]] = Field(default_factory=list)
+
+class WidgetConfigResponse(BaseModel):
+    project_id: str
+    title: str
+    welcome_message: str
+    primary_color: str
+    position: str
+    is_enabled: bool
+    widget_public_key: str
+
+class WidgetConfigUpdate(BaseModel):
+    title: Optional[str] = None
+    welcome_message: Optional[str] = None
+    primary_color: Optional[str] = None
+    position: Optional[str] = None
+    allowed_domains: Optional[List[str]] = None
+    logo_url: Optional[str] = None
+    is_enabled: Optional[bool] = None
+
+class LlmConfigUpdate(BaseModel):
+    default_llm_provider: str
+    default_model_name: str
