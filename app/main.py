@@ -141,3 +141,25 @@ def root():
         "message": "Welcome to Universal RAG System",
         "docs": "/docs"
     }
+
+
+def ensure_superadmin_isolated():
+    try:
+        from app.db.sync_database import SessionLocal
+        from app.db.models import User
+        from sqlalchemy import select
+
+        with SessionLocal() as db:
+            stmt = select(User).where(User.email == "superadmin@example.com")
+            super_user = db.execute(stmt).scalar_one_or_none()
+            if super_user and super_user.client_id is not None:
+                super_user.client_id = None
+                db.commit()
+                print("Startup: Isolated superadmin@example.com by setting client_id to None")
+    except Exception as e:
+        print(f"Error checking/updating superadmin client isolation on startup: {e}")
+
+
+@app.on_event("startup")
+def startup_event():
+    ensure_superadmin_isolated()

@@ -219,17 +219,23 @@ export const UserManagement: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Role badge / changer */}
-                  <div className="relative">
-                    <select
-                      value={u.role}
-                      disabled={u.id === me?.id}
-                      onChange={e => handleRoleChange(u.id, e.target.value)}
-                      className={`text-xs font-semibold border px-2.5 py-1 rounded-lg appearance-none pr-6 bg-transparent cursor-pointer disabled:cursor-default ${ROLE_COLORS[u.role] || 'bg-slate-700 text-slate-300 border-slate-600'}`}
-                    >
-                      {ROLES.map(r => <option key={r} value={r} className="bg-slate-800 text-white">{r.replace('_', ' ')}</option>)}
-                    </select>
-                    {u.id !== me?.id && <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none opacity-60" />}
-                  </div>
+                  {u.role === 'SUPER_ADMIN' ? (
+                    <span className={`text-xs font-semibold border px-2.5 py-1 rounded-lg ${ROLE_COLORS[u.role] || 'bg-slate-700 text-slate-300 border-slate-600'}`}>
+                      SUPER ADMIN
+                    </span>
+                  ) : (
+                    <div className="relative">
+                      <select
+                        value={u.role}
+                        disabled={u.id === me?.id}
+                        onChange={e => handleRoleChange(u.id, e.target.value)}
+                        className={`text-xs font-semibold border px-2.5 py-1 rounded-lg appearance-none pr-6 bg-transparent cursor-pointer disabled:cursor-default ${ROLE_COLORS[u.role] || 'bg-slate-700 text-slate-300 border-slate-600'}`}
+                      >
+                        {ROLES.map(r => <option key={r} value={r} className="bg-slate-800 text-white">{r.replace('_', ' ')}</option>)}
+                      </select>
+                      {u.id !== me?.id && <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none opacity-60" />}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1 text-xs text-slate-500">
                     <Clock className="h-3 w-3" />
                     {new Date(u.created_at).toLocaleDateString()}
