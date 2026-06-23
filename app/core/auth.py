@@ -110,25 +110,11 @@ def check_project_access(user: User, project_id: str) -> str:
         if user.role == "CLIENT_ADMIN":
             if project.client_id == user.client_id:
                 return "CLIENT_ADMIN"
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Access denied to this project",
-                )
         
-        # Others must be members
-        membership = db.execute(
-            select(ProjectMembership)
-            .where(ProjectMembership.project_id == project_id)
-            .where(ProjectMembership.user_id == user.id)
-        ).scalar_one_or_none()
-        
-        if not membership:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not a member of this project",
-            )
-        return membership.role
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied to this project",
+        )
 
 def require_project_permission(project_id: str, required_roles: List[str]):
     def dependency(user: User = Depends(get_current_user)):

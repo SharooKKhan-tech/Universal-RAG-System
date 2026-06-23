@@ -103,7 +103,7 @@ class TokenResponse(BaseModel):
 class UserInvite(BaseModel):
     email: str
     name: str
-    role: Literal["CLIENT_ADMIN", "PROJECT_ADMIN", "DEVELOPER", "VIEWER", "END_USER"]
+    role: Literal["SUPER_ADMIN", "CLIENT_ADMIN"]
     project_ids: Optional[List[str]] = Field(default_factory=list)
 
 class WidgetConfigResponse(BaseModel):

@@ -15,13 +15,9 @@ interface TeamUser {
 const ROLE_COLORS: Record<string, string> = {
   SUPER_ADMIN: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
   CLIENT_ADMIN: 'bg-violet-500/10 text-violet-400 border-violet-500/30',
-  PROJECT_ADMIN: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  DEVELOPER: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  VIEWER: 'bg-slate-500/10 text-slate-400 border-slate-500/30',
-  END_USER: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
 };
 
-const ROLES = ['CLIENT_ADMIN', 'PROJECT_ADMIN', 'DEVELOPER', 'VIEWER'];
+const ROLES = ['CLIENT_ADMIN'];
 
 export const UserManagement: React.FC = () => {
   const { user: me } = useAuth();
@@ -30,7 +26,7 @@ export const UserManagement: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showInvite, setShowInvite] = useState(false);
-  const [invite, setInvite] = useState({ name: '', email: '', role: 'DEVELOPER' });
+  const [invite, setInvite] = useState({ name: '', email: '', role: 'CLIENT_ADMIN' });
   const [inviting, setInviting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
@@ -61,7 +57,7 @@ export const UserManagement: React.FC = () => {
       await apiClient.post('/users/invite', invite);
       flash('User invited successfully!');
       setShowInvite(false);
-      setInvite({ name: '', email: '', role: 'DEVELOPER' });
+      setInvite({ name: '', email: '', role: 'CLIENT_ADMIN' });
       fetchUsers();
     } catch (e: any) {
       setError(e?.response?.data?.detail || 'Failed to invite user');
@@ -261,10 +257,8 @@ export const UserManagement: React.FC = () => {
         </h3>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { role: 'CLIENT_ADMIN', desc: 'Full access: users, projects, billing, all settings' },
-            { role: 'PROJECT_ADMIN', desc: 'Manage assigned projects, docs, API keys, widget' },
-            { role: 'DEVELOPER', desc: 'Read/write documents, chat, search, evaluations' },
-            { role: 'VIEWER', desc: 'Read-only access to analytics and chat history' },
+            { role: 'SUPER_ADMIN', desc: 'System-wide owner: manage all clients and global telemetry' },
+            { role: 'CLIENT_ADMIN', desc: 'Company/Client owner: manage projects, invite users, view logs' },
           ].map(({ role, desc }) => (
             <div key={role} className="flex items-start gap-2">
               <span className={`text-[10px] font-bold border px-2 py-0.5 rounded shrink-0 mt-0.5 ${ROLE_COLORS[role]}`}>{role.replace('_', ' ')}</span>

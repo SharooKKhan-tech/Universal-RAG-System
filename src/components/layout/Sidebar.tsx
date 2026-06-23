@@ -87,10 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
 
   const ROLE_LABELS: Record<string, string> = {
     SUPER_ADMIN: 'Super Admin',
-    CLIENT_ADMIN: 'Admin',
-    PROJECT_ADMIN: 'Project Admin',
-    DEVELOPER: 'Developer',
-    VIEWER: 'Viewer',
+    CLIENT_ADMIN: 'Client Admin',
   };
 
   return (
