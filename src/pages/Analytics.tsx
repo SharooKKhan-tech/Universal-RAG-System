@@ -58,12 +58,32 @@ export const Analytics: React.FC = () => {
       setLoading(true);
       try {
         // Fetch summary
-        const summaryRes = await apiClient.get<AnalyticsSummary>(`/analytics/${selectedProject.id}`);
-        setSummary(summaryRes.data);
+        const summaryRes = await apiClient.get<any>(`/analytics/${selectedProject.id}`);
+        const sData = summaryRes.data;
+        if (sData) {
+          const mappedSummary: AnalyticsSummary = {
+            total_queries: sData.total_queries ?? 0,
+            answered_queries: sData.answered_queries ?? 0,
+            no_answer_queries: sData.no_answer_queries ?? 0,
+            answer_rate: sData.answer_rate ?? sData.answer_rate_percentage ?? 0,
+            average_latency_ms: sData.average_latency_ms ?? 0,
+            average_sources: sData.average_sources ?? sData.average_sources_per_answer ?? 0,
+            model_distribution: sData.model_distribution ?? sData.model_usage ?? {}
+          };
+          setSummary(mappedSummary);
+        }
 
         // Fetch documents usage
-        const docsUsageRes = await apiClient.get<DocumentUsage[]>(`/analytics/${selectedProject.id}/documents`);
-        setDocumentUsage(docsUsageRes.data);
+        const docsUsageRes = await apiClient.get<any>(`/analytics/${selectedProject.id}/documents`);
+        const backendDocs = docsUsageRes.data?.documents || [];
+        const totalUsedCount = backendDocs.reduce((sum: number, doc: any) => sum + doc.used_count, 0) || 1;
+        const mappedDocs: DocumentUsage[] = backendDocs.map((doc: any, index: number) => ({
+          document_id: String(index + 1),
+          file_name: doc.file_name || 'Unknown',
+          query_count: doc.used_count,
+          percentage: Number(((doc.used_count / totalUsedCount) * 100).toFixed(1))
+        }));
+        setDocumentUsage(mappedDocs);
 
         // Fetch query list for recent queries table
         const queriesRes = await apiClient.get<QueryRecord[]>(`/queries/${selectedProject.id}`);
