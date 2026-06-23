@@ -139,6 +139,11 @@ def update_user_role(
             )
         
         # Check authorization
+        if user.role == "SUPER_ADMIN" and current_user.role != "SUPER_ADMIN":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only SUPER_ADMIN can modify a SUPER_ADMIN user"
+            )
         if current_user.role != "SUPER_ADMIN" and user.client_id != current_user.client_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -184,6 +189,12 @@ def update_user_status(
                 detail="User not found"
             )
         
+        # Check authorization
+        if user.role == "SUPER_ADMIN" and current_user.role != "SUPER_ADMIN":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only SUPER_ADMIN can modify a SUPER_ADMIN user"
+            )
         if current_user.role != "SUPER_ADMIN" and user.client_id != current_user.client_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -214,6 +225,12 @@ def delete_user(
                 detail="User not found"
             )
         
+        # Check authorization
+        if user.role == "SUPER_ADMIN" and current_user.role != "SUPER_ADMIN":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only SUPER_ADMIN can delete a SUPER_ADMIN user"
+            )
         if current_user.role != "SUPER_ADMIN" and user.client_id != current_user.client_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
