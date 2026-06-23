@@ -13,9 +13,26 @@ config = context.config
 import os
 database_url = os.environ.get("DATABASE_URL")
 if database_url:
-    # Convert asyncpg driver to synchronous postgresql driver for Alembic migrations
+    print("[Alembic] DATABASE_URL environment variable found.")
     sync_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
+    if sync_url.startswith("postgres://"):
+        sync_url = sync_url.replace("postgres://", "postgresql://", 1)
+    
+    # Mask password for secure logging
+    masked_url = sync_url
+    if "@" in sync_url:
+        parts = sync_url.split("@")
+        left = parts[0]
+        if ":" in left:
+            scheme_user = left.split(":")
+            if len(scheme_user) >= 3:
+                masked_url = f"{scheme_user[0]}:{scheme_user[1]}:****@{parts[1]}"
+            else:
+                masked_url = f"{scheme_user[0]}:****@{parts[1]}"
+    print(f"[Alembic] Connecting to database: {masked_url}")
     config.set_main_option("sqlalchemy.url", sync_url)
+else:
+    print("[Alembic] DATABASE_URL environment variable NOT found. Falling back to default in alembic.ini")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
