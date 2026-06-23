@@ -75,16 +75,16 @@ export const AuditLogs: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
             <div className="bg-amber-500/10 p-2 rounded-xl border border-amber-500/20">
-              <ShieldCheck className="h-6 w-6 text-amber-400" />
+              <ShieldCheck className="h-6 w-6 text-amber-600" />
             </div>
             Audit Logs
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Complete trail of all sensitive system actions</p>
+          <p className="text-slate-500 text-sm mt-1">Complete trail of all sensitive system actions</p>
         </div>
-        <button onClick={fetchLogs} className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm transition border border-slate-700">
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+        <button onClick={fetchLogs} className="flex items-center gap-2 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-xl text-sm transition border border-slate-200 shadow-xs cursor-pointer">
+          <RefreshCw className={`h-4 w-4 text-slate-500 ${loading ? 'animate-spin' : ''}`} /> Refresh
         </button>
       </div>
 
@@ -102,9 +102,9 @@ export const AuditLogs: React.FC = () => {
           { label: 'Auth Events', value: logs.filter(l => l.action.startsWith('user.')).length },
           { label: 'Unique Actions', value: uniqueActions.length },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-            <div className="text-2xl font-bold text-slate-100">{value}</div>
-            <div className="text-xs text-slate-400 mt-0.5">{label}</div>
+          <div key={label} className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs">
+            <div className="text-2xl font-bold text-slate-800">{value}</div>
+            <div className="text-xs text-slate-500 mt-0.5">{label}</div>
           </div>
         ))}
       </div>
@@ -112,38 +112,38 @@ export const AuditLogs: React.FC = () => {
       {/* Filters */}
       <div className="flex gap-3">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
             type="text"
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search actions, IPs, users…"
-            className="w-full bg-slate-800/60 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
+            className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 transition shadow-2xs"
           />
         </div>
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <select
             value={actionFilter}
             onChange={e => { setActionFilter(e.target.value); setPage(1); }}
-            className="bg-slate-800/60 border border-slate-700 rounded-xl pl-9 pr-8 py-2 text-sm text-slate-300 focus:outline-none focus:border-violet-500 transition appearance-none"
+            className="bg-white border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-sm text-slate-700 focus:outline-none focus:border-violet-500 transition appearance-none shadow-2xs"
           >
-            <option value="">All actions</option>
-            {uniqueActions.map(a => <option key={a} value={a}>{a}</option>)}
+            <option value="" className="bg-white text-slate-800">All actions</option>
+            {uniqueActions.map(a => <option key={a} value={a} className="bg-white text-slate-800">{a}</option>)}
           </select>
-          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
+          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
         </div>
-        <span className="flex items-center text-xs text-slate-500 px-3 bg-slate-800/40 border border-slate-700 rounded-xl">
+        <span className="flex items-center text-xs text-slate-600 px-3 bg-white border border-slate-200 rounded-xl shadow-2xs">
           {filtered.length} events
         </span>
       </div>
 
       {/* Log Table */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-800 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+              <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                 <th className="px-5 py-3 text-left">Time</th>
                 <th className="px-5 py-3 text-left">Action</th>
                 <th className="px-5 py-3 text-left">Resource</th>
@@ -152,7 +152,7 @@ export const AuditLogs: React.FC = () => {
                 <th className="px-5 py-3 text-left w-8"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr><td colSpan={6} className="py-16 text-center text-slate-500">
                   <RefreshCw className="h-5 w-5 animate-spin inline mr-2" /> Loading…
@@ -165,12 +165,12 @@ export const AuditLogs: React.FC = () => {
               ) : paginated.map(log => (
                 <React.Fragment key={log.id}>
                   <tr
-                    className="hover:bg-slate-800/30 transition cursor-pointer"
+                    className="hover:bg-slate-50/50 transition cursor-pointer"
                     onClick={() => setExpanded(expanded === log.id ? null : log.id)}
                   >
-                    <td className="px-5 py-3 text-slate-400 text-xs whitespace-nowrap">
+                    <td className="px-5 py-3 text-slate-500 text-xs whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3" />
+                        <Clock className="h-3 w-3 text-slate-400" />
                         {fmt(log.created_at)}
                       </div>
                     </td>
@@ -179,37 +179,37 @@ export const AuditLogs: React.FC = () => {
                         {log.action}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">
+                    <td className="px-5 py-3 text-slate-600 text-xs">
                       {log.resource_type && (
                         <span>{log.resource_type}{log.resource_id ? ` · ${log.resource_id.slice(0, 8)}…` : ''}</span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">
+                    <td className="px-5 py-3 text-slate-600 text-xs">
                       {log.user_id ? (
                         <div className="flex items-center gap-1.5">
-                          <User className="h-3 w-3" />
+                          <User className="h-3 w-3 text-slate-400" />
                           {log.user_id.slice(0, 8)}…
                         </div>
-                      ) : <span className="text-slate-600">—</span>}
+                      ) : <span className="text-slate-400">—</span>}
                     </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">
+                    <td className="px-5 py-3 text-slate-600 text-xs">
                       {log.ip_address ? (
                         <div className="flex items-center gap-1.5">
-                          <Globe className="h-3 w-3" />
+                          <Globe className="h-3 w-3 text-slate-400" />
                           {log.ip_address}
                         </div>
-                      ) : <span className="text-slate-600">—</span>}
+                      ) : <span className="text-slate-400">—</span>}
                     </td>
-                    <td className="px-3 py-3 text-slate-600">
+                    <td className="px-3 py-3 text-slate-400">
                       {expanded === log.id
                         ? <ChevronDown className="h-3.5 w-3.5" />
                         : <ChevronRight className="h-3.5 w-3.5" />}
                     </td>
                   </tr>
                   {expanded === log.id && log.metadata_json && Object.keys(log.metadata_json).length > 0 && (
-                    <tr className="bg-slate-950/40">
+                    <tr className="bg-slate-50/40">
                       <td colSpan={6} className="px-5 py-3">
-                        <pre className="text-[11px] text-slate-400 bg-slate-900 border border-slate-700 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">
+                        <pre className="text-[11px] text-slate-300 bg-slate-950 border border-slate-800 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">
                           {JSON.stringify(log.metadata_json, null, 2)}
                         </pre>
                       </td>
@@ -223,12 +223,12 @@ export const AuditLogs: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="border-t border-slate-800 px-5 py-3 flex items-center justify-between text-xs text-slate-400">
+          <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between text-xs text-slate-500 bg-slate-50/50">
             <span>Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-lg transition">← Prev</button>
-              <span className="px-3 py-1 bg-slate-800 rounded-lg">{page} / {totalPages}</span>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-lg transition">Next →</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 bg-white hover:bg-slate-50 disabled:opacity-40 border border-slate-200 rounded-lg transition cursor-pointer">← Prev</button>
+              <span className="px-3 py-1 bg-white border border-slate-200 rounded-lg font-medium">{page} / {totalPages}</span>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 bg-white hover:bg-slate-50 disabled:opacity-40 border border-slate-200 rounded-lg transition cursor-pointer">Next →</button>
             </div>
           </div>
         )}

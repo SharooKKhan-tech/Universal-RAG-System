@@ -103,16 +103,16 @@ export const WidgetConfig: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
             <div className="bg-cyan-500/10 p-2 rounded-xl border border-cyan-500/20">
-              <MessageSquareCode className="h-6 w-6 text-cyan-400" />
+              <MessageSquareCode className="h-6 w-6 text-cyan-600" />
             </div>
             Chat Widget
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Embed a live RAG chat widget on any website</p>
+          <p className="text-slate-500 text-sm mt-1">Embed a live RAG chat widget on any website</p>
         </div>
-        <button onClick={fetchConfig} className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm transition border border-slate-700">
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+        <button onClick={fetchConfig} className="flex items-center gap-2 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-xl text-sm transition border border-slate-200 shadow-xs cursor-pointer">
+          <RefreshCw className={`h-4 w-4 text-slate-500 ${loading ? 'animate-spin' : ''}`} /> Refresh
         </button>
       </div>
 
@@ -129,21 +129,21 @@ export const WidgetConfig: React.FC = () => {
 
       {/* Public key banner */}
       {cfg && (
-        <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 flex items-center gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 shadow-xs">
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-slate-400 mb-1">Widget Public Key</div>
-            <code className="text-sm text-amber-400 font-mono truncate block">{cfg.widget_public_key}</code>
+            <div className="text-xs font-semibold text-slate-500 mb-1">Widget Public Key</div>
+            <code className="text-sm text-amber-600 font-mono truncate block">{cfg.widget_public_key}</code>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <div className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full border ${form.is_enabled ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-700 text-slate-400 border-slate-600'}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${form.is_enabled ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+            <div className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full border ${form.is_enabled ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${form.is_enabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
               {form.is_enabled ? 'Enabled' : 'Disabled'}
             </div>
             <button
               onClick={() => copyToClipboard(cfg.widget_public_key, 'key')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition border border-slate-700"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs transition border border-transparent cursor-pointer"
             >
-              {copied === 'key' ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied === 'key' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5 text-slate-500" />}
               {copied === 'key' ? 'Copied!' : 'Copy'}
             </button>
           </div>
@@ -151,7 +151,7 @@ export const WidgetConfig: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-900/40 p-1 rounded-xl border border-slate-800 w-fit">
+      <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200 w-fit">
         {[
           { key: 'config', label: 'Configuration', icon: Palette },
           { key: 'embed', label: 'Embed Code', icon: Code2 },
@@ -160,7 +160,7 @@ export const WidgetConfig: React.FC = () => {
           <button
             key={key}
             onClick={() => setActiveTab(key as any)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${activeTab === key ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer ${activeTab === key ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
           >
             <Icon className="h-4 w-4" /> {label}
           </button>
@@ -171,32 +171,32 @@ export const WidgetConfig: React.FC = () => {
       {activeTab === 'config' && (
         <form onSubmit={handleSave} className="space-y-5">
           <div className="grid grid-cols-2 gap-5">
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-4">
-              <h2 className="text-sm font-semibold text-slate-200">Appearance</h2>
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4 shadow-xs">
+              <h2 className="text-sm font-semibold text-slate-800">Appearance</h2>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">Widget Title</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">Widget Title</label>
                 <input
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500 transition"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-violet-500 focus:bg-white transition"
                   placeholder="Chat Assistant"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">Welcome Message</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">Welcome Message</label>
                 <textarea
                   value={form.welcome_message}
                   onChange={e => setForm(f => ({ ...f, welcome_message: e.target.value }))}
                   rows={3}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-violet-500 transition resize-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-violet-500 focus:bg-white transition resize-none"
                   placeholder="Hi! How can I help you today?"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-2">Primary Color</label>
+                <label className="block text-xs font-medium text-slate-500 mb-2">Primary Color</label>
                 <div className="flex items-center gap-2 flex-wrap">
                   {PRESETS.map(({ label, color }) => (
                     <button
@@ -204,7 +204,7 @@ export const WidgetConfig: React.FC = () => {
                       type="button"
                       onClick={() => setForm(f => ({ ...f, primary_color: color }))}
                       title={label}
-                      className={`w-7 h-7 rounded-full border-2 transition ${form.primary_color === color ? 'border-white scale-110' : 'border-transparent'}`}
+                      className={`w-7 h-7 rounded-full border-2 transition cursor-pointer ${form.primary_color === color ? 'border-slate-800 scale-110' : 'border-transparent'}`}
                       style={{ backgroundColor: color }}
                     />
                   ))}
@@ -212,20 +212,20 @@ export const WidgetConfig: React.FC = () => {
                     type="color"
                     value={form.primary_color}
                     onChange={e => setForm(f => ({ ...f, primary_color: e.target.value }))}
-                    className="w-7 h-7 rounded-full border border-slate-600 cursor-pointer bg-transparent"
+                    className="w-7 h-7 rounded-full border border-slate-300 cursor-pointer bg-transparent"
                     title="Custom color"
                   />
-                  <code className="text-xs text-slate-400 ml-1">{form.primary_color}</code>
+                  <code className="text-xs text-slate-500 ml-1">{form.primary_color}</code>
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-4">
-              <h2 className="text-sm font-semibold text-slate-200">Behaviour</h2>
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4 shadow-xs">
+              <h2 className="text-sm font-semibold text-slate-800">Behaviour</h2>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">
-                  <Globe className="h-3.5 w-3.5 inline mr-1" /> Position
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                  <Globe className="h-3.5 w-3.5 inline mr-1 text-slate-400" /> Position
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {POSITIONS.map(pos => (
@@ -233,7 +233,7 @@ export const WidgetConfig: React.FC = () => {
                       key={pos}
                       type="button"
                       onClick={() => setForm(f => ({ ...f, position: pos }))}
-                      className={`px-3 py-2 rounded-lg text-xs font-medium border transition ${form.position === pos ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}`}
+                      className={`px-3 py-2 rounded-lg text-xs font-medium border transition cursor-pointer ${form.position === pos ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-100'}`}
                     >
                       {pos.replace('-', ' ')}
                     </button>
@@ -242,13 +242,13 @@ export const WidgetConfig: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-2">Widget Status</label>
+                <label className="block text-xs font-medium text-slate-500 mb-2">Widget Status</label>
                 <button
                   type="button"
                   onClick={() => setForm(f => ({ ...f, is_enabled: !f.is_enabled }))}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium transition w-full ${form.is_enabled ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 border-slate-700 text-slate-400'}`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium transition w-full cursor-pointer ${form.is_enabled ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}
                 >
-                  {form.is_enabled ? <ToggleRight className="h-5 w-5" /> : <ToggleLeft className="h-5 w-5" />}
+                  {form.is_enabled ? <ToggleRight className="h-5 w-5 text-emerald-600" /> : <ToggleLeft className="h-5 w-5 text-slate-400" />}
                   {form.is_enabled ? 'Widget is Enabled' : 'Widget is Disabled'}
                 </button>
               </div>
@@ -258,7 +258,7 @@ export const WidgetConfig: React.FC = () => {
                   id="save-widget-config"
                   type="submit"
                   disabled={saving}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-60 text-white font-semibold rounded-xl transition text-sm"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-60 text-white font-semibold rounded-xl transition text-sm cursor-pointer"
                 >
                   <Save className="h-4 w-4" />
                   {saving ? 'Saving…' : 'Save Configuration'}
@@ -267,41 +267,39 @@ export const WidgetConfig: React.FC = () => {
             </div>
           </div>
         </form>
-      )}
-
-      {/* Embed Tab */}
+      )}      {/* Embed Tab */}
       {activeTab === 'embed' && cfg && (
         <div className="space-y-5">
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-slate-200">HTML Embed Snippet</h2>
+              <h2 className="text-sm font-semibold text-slate-800">HTML Embed Snippet</h2>
               <button
                 onClick={() => copyToClipboard(embedSnippet, 'embed')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition border border-slate-700"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs transition border border-transparent cursor-pointer"
               >
-                {copied === 'embed' ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied === 'embed' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5 text-slate-500" />}
                 {copied === 'embed' ? 'Copied!' : 'Copy'}
               </button>
             </div>
-            <pre className="bg-slate-950 border border-slate-700 rounded-xl p-4 text-xs text-cyan-300 overflow-x-auto whitespace-pre">{embedSnippet}</pre>
-            <p className="text-xs text-slate-500 mt-3">Add this script tag before the closing <code className="text-slate-400">&lt;/body&gt;</code> tag of any webpage.</p>
+            <pre className="bg-slate-950 border border-slate-850 rounded-xl p-4 text-xs text-cyan-400 overflow-x-auto whitespace-pre">{embedSnippet}</pre>
+            <p className="text-xs text-slate-500 mt-3">Add this script tag before the closing <code className="text-slate-500">&lt;/body&gt;</code> tag of any webpage.</p>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-slate-200">REST API (cURL)</h2>
+              <h2 className="text-sm font-semibold text-slate-800">REST API (cURL)</h2>
               <button
                 onClick={() => copyToClipboard(curlExample, 'curl')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition border border-slate-700"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs transition border border-transparent cursor-pointer"
               >
-                {copied === 'curl' ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied === 'curl' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5 text-slate-500" />}
                 {copied === 'curl' ? 'Copied!' : 'Copy'}
               </button>
             </div>
-            <pre className="bg-slate-950 border border-slate-700 rounded-xl p-4 text-xs text-emerald-300 overflow-x-auto whitespace-pre">{curlExample}</pre>
+            <pre className="bg-slate-950 border border-slate-850 rounded-xl p-4 text-xs text-emerald-400 overflow-x-auto whitespace-pre">{curlExample}</pre>
           </div>
 
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 text-xs text-amber-400">
+          <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-xs text-amber-800">
             <strong>Security note:</strong> The widget public key is safe to expose publicly. It only grants access to the chat endpoint for this project. Never expose secret project API keys in browser code.
           </div>
         </div>
@@ -309,22 +307,22 @@ export const WidgetConfig: React.FC = () => {
 
       {/* Preview Tab */}
       {activeTab === 'preview' && (
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
-          <h2 className="text-sm font-semibold text-slate-200 mb-4">Widget Preview</h2>
-          <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl h-80 overflow-hidden">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
+          <h2 className="text-sm font-semibold text-slate-800 mb-4">Widget Preview</h2>
+          <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl h-80 overflow-hidden shadow-inner">
             {/* Mock browser */}
-            <div className="absolute inset-x-0 top-0 h-8 bg-slate-700/50 flex items-center px-4 gap-2">
+            <div className="absolute inset-x-0 top-0 h-8 bg-slate-200/60 flex items-center px-4 gap-2 border-b border-slate-200/30">
               <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
               <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-              <span className="ml-3 text-[10px] text-slate-500 bg-slate-800 px-4 py-0.5 rounded-full">your-website.com</span>
+              <span className="ml-3 text-[10px] text-slate-600 bg-white px-4 py-0.5 rounded-full border border-slate-200/50">your-website.com</span>
             </div>
-            <div className="absolute inset-0 top-8 flex items-center justify-center text-slate-600 text-sm">
+            <div className="absolute inset-0 top-8 flex items-center justify-center text-slate-400 text-sm font-medium">
               Your website content here
             </div>
             {/* Widget bubble mock */}
             <div className="absolute bottom-4 right-4 flex flex-col items-end gap-2">
-              <div className="bg-white rounded-2xl shadow-2xl w-52 overflow-hidden">
+              <div className="bg-white rounded-2xl shadow-2xl w-52 overflow-hidden border border-slate-100">
                 <div className="px-3 py-2 flex items-center gap-2" style={{ backgroundColor: form.primary_color }}>
                   <span className="h-2 w-2 bg-white/40 rounded-full" />
                   <span className="text-white text-[11px] font-semibold truncate">{form.title || 'Chat Assistant'}</span>
