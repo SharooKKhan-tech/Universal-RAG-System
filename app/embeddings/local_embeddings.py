@@ -1,5 +1,6 @@
 from typing import List
 import requests
+import time
 from fastapi import HTTPException
 from app.core.config import settings
 
@@ -24,7 +25,6 @@ class GeminiEmbeddingProvider:
         url = f"https://generativelanguage.googleapis.com/v1beta/{self.model_name}:batchEmbedContents?key={api_key}"
 
         # batch requests (Gemini API allows batching up to 100 requests per call)
-        # We chunk them into batches of 100 to avoid API batch size limit errors
         batch_size = 100
         all_embeddings = []
 
@@ -40,17 +40,41 @@ class GeminiEmbeddingProvider:
                     }
                 })
 
-            try:
-                response = requests.post(url, json={"requests": requests_payload}, timeout=30)
-                response.raise_for_status()
-                data = response.json()
-                
-                for emb in data.get("embeddings", []):
-                    all_embeddings.append(emb["values"])
-            except Exception as e:
+            max_retries = 4
+            backoff_seconds = 2.0
+            success = False
+            
+            for attempt in range(max_retries):
+                try:
+                    response = requests.post(url, json={"requests": requests_payload}, timeout=30)
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    for emb in data.get("embeddings", []):
+                        all_embeddings.append(emb["values"])
+                    success = True
+                    break
+                except requests.exceptions.HTTPError as http_err:
+                    status_code = http_err.response.status_code if http_err.response is not None else 500
+                    if status_code == 429 and attempt < max_retries - 1:
+                        print(f"[Gemini Embeddings 429] Rate limit hit. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
+                        time.sleep(backoff_seconds)
+                        backoff_seconds *= 2
+                        continue
+                    raise HTTPException(
+                        status_code=status_code,
+                        detail=f"Gemini API Embeddings error: {str(http_err)}"
+                    )
+                except Exception as e:
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"Gemini API Embeddings error: {str(e)}"
+                    )
+            
+            if not success:
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Gemini API Embeddings error: {str(e)}"
+                    detail="Failed to generate document embeddings after multiple retries."
                 )
 
         return all_embeddings
@@ -69,15 +93,35 @@ class GeminiEmbeddingProvider:
             }
         }
 
-        try:
-            response = requests.post(url, json=payload, timeout=20)
-            response.raise_for_status()
-            data = response.json()
-            return data["embedding"]["values"]
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Gemini API Query Embedding error: {str(e)}"
-            )
+        max_retries = 4
+        backoff_seconds = 2.0
+
+        for attempt in range(max_retries):
+            try:
+                response = requests.post(url, json=payload, timeout=20)
+                response.raise_for_status()
+                data = response.json()
+                return data["embedding"]["values"]
+            except requests.exceptions.HTTPError as http_err:
+                status_code = http_err.response.status_code if http_err.response is not None else 500
+                if status_code == 429 and attempt < max_retries - 1:
+                    print(f"[Gemini Query Embedding 429] Rate limit hit. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
+                    time.sleep(backoff_seconds)
+                    backoff_seconds *= 2
+                    continue
+                raise HTTPException(
+                    status_code=status_code,
+                    detail=f"Gemini API Query Embedding error: {str(http_err)}"
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Gemini API Query Embedding error: {str(e)}"
+                )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate query embedding after multiple retries."
+        )
 
 embedding_provider = GeminiEmbeddingProvider()
