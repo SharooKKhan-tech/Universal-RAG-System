@@ -148,6 +148,7 @@ def ensure_superadmin_exists():
         from app.db.sync_database import SessionLocal
         from app.db.models import User
         from app.core.auth import get_password_hash
+        from app.core.config import settings
         from sqlalchemy import select
 
         email = settings.SUPERADMIN_EMAIL

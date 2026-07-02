@@ -57,8 +57,8 @@ class GeminiEmbeddingProvider:
                     break
                 except requests.exceptions.HTTPError as http_err:
                     status_code = http_err.response.status_code if http_err.response is not None else 500
-                    if status_code == 429 and attempt < max_retries - 1:
-                        print(f"[Gemini Embeddings 429] Rate limit hit. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
+                    if status_code in (429, 503) and attempt < max_retries - 1:
+                        print(f"[Gemini Embeddings {status_code}] Temporary error. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
                         time.sleep(backoff_seconds)
                         backoff_seconds *= 2
                         continue
@@ -105,8 +105,8 @@ class GeminiEmbeddingProvider:
                 return data["embedding"]["values"]
             except requests.exceptions.HTTPError as http_err:
                 status_code = http_err.response.status_code if http_err.response is not None else 500
-                if status_code == 429 and attempt < max_retries - 1:
-                    print(f"[Gemini Query Embedding 429] Rate limit hit. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
+                if status_code in (429, 503) and attempt < max_retries - 1:
+                    print(f"[Gemini Query Embedding {status_code}] Temporary error. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
                     time.sleep(backoff_seconds)
                     backoff_seconds *= 2
                     continue

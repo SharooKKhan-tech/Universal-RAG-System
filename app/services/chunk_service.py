@@ -37,18 +37,24 @@ def chunk_document(document_id: str):
         )
 
     text_path = document.get("text_path")
+    if not text_path:
+        raise HTTPException(status_code=404, detail="Extracted text path not found")
 
-    if not text_path or not Path(text_path).exists():
-        raise HTTPException(status_code=404, detail="Extracted text file not found")
+    temp_local_path = Path("uploads/tmp") / f"chunk_{document_id}.txt"
+    temp_local_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
         update_document_status(document_id, "chunking")
-
-        extracted_text = Path(text_path).read_text(
-            encoding="utf-8",
-            errors="ignore"
-        )
-
+        from app.core.storage import storage_provider
+        try:
+            storage_provider.download_file(text_path, temp_local_path)
+            extracted_text = temp_local_path.read_text(
+                encoding="utf-8",
+                errors="ignore"
+            )
+        finally:
+            if temp_local_path.exists():
+                temp_local_path.unlink()
         generated_chunks = split_text_into_chunks(extracted_text)
 
         if not generated_chunks:

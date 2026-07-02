@@ -46,8 +46,8 @@ class GeminiProvider(LLMProvider):
                 return data["candidates"][0]["content"]["parts"][0]["text"].strip()
             except requests.exceptions.HTTPError as http_err:
                 status_code = http_err.response.status_code if http_err.response is not None else 500
-                if status_code == 429 and attempt < max_retries - 1:
-                    print(f"[Gemini API 429] Rate limit hit. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
+                if status_code in (429, 503) and attempt < max_retries - 1:
+                    print(f"[Gemini API {status_code}] Temporary error. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
                     time.sleep(backoff_seconds)
                     backoff_seconds *= 2
                     continue
@@ -125,8 +125,8 @@ class GeminiProvider(LLMProvider):
                 return  # Success
             except requests.exceptions.HTTPError as http_err:
                 status_code = http_err.response.status_code if http_err.response is not None else 500
-                if status_code == 429 and attempt < max_retries - 1:
-                    print(f"[Gemini Stream 429] Rate limit hit. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
+                if status_code in (429, 503) and attempt < max_retries - 1:
+                    print(f"[Gemini Stream {status_code}] Temporary error. Retrying in {backoff_seconds}s... (Attempt {attempt+1}/{max_retries})")
                     time.sleep(backoff_seconds)
                     backoff_seconds *= 2
                     continue

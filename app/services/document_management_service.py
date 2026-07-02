@@ -14,13 +14,8 @@ def delete_file_if_exists(file_path: str | None):
     if not file_path:
         return False
 
-    path = Path(file_path)
-
-    if path.exists():
-        path.unlink()
-        return True
-
-    return False
+    from app.core.storage import storage_provider
+    return storage_provider.delete_file(file_path)
 
 
 def delete_document_record(document_id: str):

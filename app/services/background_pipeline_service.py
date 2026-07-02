@@ -52,20 +52,32 @@ async def upload_document_for_background_processing(
 
         document_id = str(uuid4())
 
-        project_upload_dir = UPLOADS_DIR / project_id
-        project_upload_dir.mkdir(parents=True, exist_ok=True)
-
-        stored_file_path = project_upload_dir / f"{document_id}_{original_filename}"
-
-        file_bytes = await file.read()
-        stored_file_path.write_bytes(file_bytes)
+        from app.core.storage import storage_provider
+        
+        # Save to temporary path
+        temp_dir = Path("uploads/tmp")
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        temp_path = temp_dir / f"{document_id}_{original_filename}"
+        
+        try:
+            file_bytes = await file.read()
+            temp_path.write_bytes(file_bytes)
+            
+            # Upload via storage provider
+            stored_file_path = storage_provider.upload_file(
+                temp_path, 
+                f"{project_id}/{document_id}_{original_filename}"
+            )
+        finally:
+            if temp_path.exists():
+                temp_path.unlink()
 
         document = Document(
             id=document_id,
             project_id=project_id,
             file_name=original_filename,
             file_type=file_extension,
-            file_path=str(stored_file_path),
+            file_path=stored_file_path,
             text_path=None,
             status="queued",
             error_message=None,
@@ -121,26 +133,45 @@ def process_document_in_background(document_id: str):
 
         update_document_status(document_id, "processing")
 
-        extracted_text = extract_text_from_file(
-            file_path=document["file_path"],
-            file_type=document["file_type"]
-        )
+        from app.core.storage import storage_provider
+
+        # Download file to local temporary path to extract text
+        temp_local_path = Path("uploads/tmp") / f"extract_{document_id}.{document['file_type']}"
+        temp_local_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        try:
+            storage_provider.download_file(document["file_path"], temp_local_path)
+            extracted_text = extract_text_from_file(
+                file_path=str(temp_local_path),
+                file_type=document["file_type"]
+            )
+        finally:
+            if temp_local_path.exists():
+                temp_local_path.unlink()
 
         if not extracted_text.strip():
             raise ValueError("No readable text found in document")
 
-        EXTRACTED_TEXT_DIR.mkdir(parents=True, exist_ok=True)
-
-        text_file_path = EXTRACTED_TEXT_DIR / f"{document_id}.txt"
-        text_file_path.write_text(
-            extracted_text,
-            encoding="utf-8",
-            errors="ignore"
-        )
+        # Save extracted text to temporary file and upload
+        temp_text_path = Path("uploads/tmp") / f"extracted_{document_id}.txt"
+        temp_text_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            temp_text_path.write_text(
+                extracted_text,
+                encoding="utf-8",
+                errors="ignore"
+            )
+            stored_text_path = storage_provider.upload_file(
+                temp_text_path,
+                f"extracted_text/{document_id}.txt"
+            )
+        finally:
+            if temp_text_path.exists():
+                temp_text_path.unlink()
 
         update_document_text_path_and_status(
             document_id=document_id,
-            text_path=str(text_file_path),
+            text_path=stored_text_path,
             status="text_extracted"
         )
 
