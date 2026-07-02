@@ -12,11 +12,7 @@ import {
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Button,
-  Badge,
 } from '../components/ui/CustomUI';
 import apiClient from '../services/apiClient';
 
