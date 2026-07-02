@@ -72,6 +72,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     localStorage.removeItem('rag_token');
+    // Clear all persistent chat history keys
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('rag_chat_messages_')) {
+        localStorage.removeItem(key);
+      }
+    });
     setToken(null);
     setUser(null);
   }, []);

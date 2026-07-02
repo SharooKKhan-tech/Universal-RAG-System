@@ -24,8 +24,9 @@ from app.retrieval.confidence import (
     filter_context_results
 )
 
-from app.db.models import QueryLog
+from app.db.models import QueryLog, Project
 from app.db.sync_database import SessionLocal
+from app.generation.providers import get_provider
 
 
 def query_log_to_dict(query_log: QueryLog):
@@ -123,7 +124,7 @@ def save_query_record(
     answer: str,
     sources: list,
     latency_ms: int,
-    model_name: str = "phi3:mini",
+    model_name: str = "gemini-2.5-flash",
     confidence: str | None = None,
     status: str | None = None,
     top_similarity_score: float | None = None,
@@ -227,6 +228,19 @@ def answer_question(
 
         return cached_response
 
+    # Load project configuration
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
+
+    if not project:
+        provider_name = "gemini"
+        model_name = "gemini-2.5-flash"
+    else:
+        provider_name = project.default_llm_provider or "gemini"
+        model_name = project.default_model_name or "gemini-2.5-flash"
+
+    provider = get_provider(provider_name, model_name)
+
     rewrite_result = {
         "original_query": question,
         "rewritten_query": question,
@@ -234,7 +248,7 @@ def answer_question(
     }
 
     if rewrite_enabled:
-        rewrite_result = rewrite_query(question)
+        rewrite_result = rewrite_query(question, provider=provider)
 
     retrieval_query = rewrite_result["rewritten_query"]
 
@@ -266,7 +280,7 @@ def answer_question(
             answer=NO_ANSWER_TEXT,
             sources=[],
             latency_ms=latency_ms,
-            model_name="phi3:mini",
+            model_name=model_name,
             status="no_answer",
             confidence="low",
             top_similarity_score=None
@@ -280,7 +294,7 @@ def answer_question(
             "original_query": question,
             "sources": [],
             "latency_ms": latency_ms,
-            "model_name": "phi3:mini",
+            "model_name": model_name,
             "query_id": query_record["id"],
             "cache_hit": False,
             "estimated_tokens": 0,
@@ -306,7 +320,7 @@ def answer_question(
             answer=NO_ANSWER_TEXT,
             sources=[],
             latency_ms=latency_ms,
-            model_name="phi3:mini",
+            model_name=model_name,
             status="no_answer",
             confidence=confidence,
             top_similarity_score=top_similarity_score
@@ -320,7 +334,7 @@ def answer_question(
             "original_query": question,
             "sources": [],
             "latency_ms": latency_ms,
-            "model_name": "phi3:mini",
+            "model_name": model_name,
             "query_id": query_record["id"],
             "cache_hit": False,
             "estimated_tokens": 0,
@@ -344,7 +358,7 @@ def answer_question(
         context=context
     )
 
-    answer = generate_answer_with_ollama(prompt)
+    answer = provider.generate(prompt)
 
     sources = build_sources(retrieved_results)
 
@@ -364,7 +378,7 @@ def answer_question(
         answer=answer,
         sources=sources if status == "answered" else [],
         latency_ms=latency_ms,
-        model_name="phi3:mini",
+        model_name=model_name,
         confidence=confidence,
         status=status,
         top_similarity_score=top_similarity_score,
@@ -376,7 +390,7 @@ def answer_question(
         "answer": answer,
         "sources": sources if status == "answered" else [],
         "latency_ms": latency_ms,
-        "model_name": "phi3:mini",
+        "model_name": model_name,
         "query_id": query_record["id"],
         "cache_hit": False,
         "original_query": question

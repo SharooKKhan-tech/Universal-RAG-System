@@ -6,7 +6,7 @@ from app.services.vector_service import (
     retrieve_chunks
 )
 from app.services.document_service import get_document_by_id
-from app.core.security import verify_api_key, ensure_project_access
+from app.api.routes_documents import flexible_auth, check_flexible_project_access
 
 router = APIRouter()
 
@@ -14,14 +14,14 @@ router = APIRouter()
 @router.post("/index/{document_id}")
 def index_document(
     document_id: str,
-    api_key_record: dict = Depends(verify_api_key)
+    auth_ctx: dict = Depends(flexible_auth)
 ):
     document = get_document_by_id(document_id)
 
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    ensure_project_access(api_key_record, document["project_id"])
+    check_flexible_project_access(auth_ctx, document["project_id"])
 
     return index_document_chunks(document_id)
 
@@ -29,9 +29,9 @@ def index_document(
 @router.post("/search")
 def search_vectors(
     request: SearchRequest,
-    api_key_record: dict = Depends(verify_api_key)
+    auth_ctx: dict = Depends(flexible_auth)
 ):
-    ensure_project_access(api_key_record, request.project_id)
+    check_flexible_project_access(auth_ctx, request.project_id)
 
     return retrieve_chunks(
         project_id=request.project_id,

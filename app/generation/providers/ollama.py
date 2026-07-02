@@ -23,7 +23,7 @@ class OllamaProvider(LLMProvider):
             }
         }
         try:
-            response = requests.post(url, json=payload, timeout=60)
+            response = requests.post(url, json=payload, timeout=300)
             response.raise_for_status()
             data = response.json()
             return data.get("response", "").strip()
@@ -45,7 +45,7 @@ class OllamaProvider(LLMProvider):
             }
         }
         try:
-            response = requests.post(url, json=payload, stream=True, timeout=60)
+            response = requests.post(url, json=payload, stream=True, timeout=300)
             response.raise_for_status()
             for line in response.iter_lines():
                 if line:

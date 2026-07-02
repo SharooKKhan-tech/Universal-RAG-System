@@ -64,30 +64,42 @@ class GeminiProvider(LLMProvider):
         try:
             response = requests.post(url, json=payload, stream=True, timeout=60)
             response.raise_for_status()
-            # The streaming API returns a JSON array or SSE-like text block depending on API version.
-            # Usually it returns a JSON list of objects separated by commas or newlines.
-            # Let's decode it safely.
+            
             buffer = ""
+            brace_count = 0
+            start_idx = -1
+            
             for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    buffer += chunk.decode("utf-8")
-                    # Gemini stream returns objects inside a JSON array, e.g. [ {candidate...}, {candidate...} ]
-                    # We can parse candidates on the fly by scanning for JSON objects.
-                    # Or we can decode parts as they arrive.
-                    # Let's extract candidate parts containing text.
-                    # Let's do a simple regex or substring match for "text": "..." to make it super fast and robust!
-                    while True:
-                        start_idx = buffer.find('"text": "')
-                        if start_idx == -1:
-                            break
-                        end_idx = buffer.find('"', start_idx + 9)
-                        if end_idx == -1:
-                            break
-                        text_val = buffer[start_idx + 9:end_idx]
-                        # Clean up escape chars
-                        decoded_text = text_val.encode().decode('unicode-escape')
-                        yield decoded_text
-                        buffer = buffer[end_idx + 1:]
+                if not chunk:
+                    continue
+                buffer += chunk.decode("utf-8")
+                
+                i = 0
+                while i < len(buffer):
+                    char = buffer[i]
+                    if char == '{':
+                        if brace_count == 0:
+                            start_idx = i
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        if brace_count == 0 and start_idx != -1:
+                            # Complete JSON object found
+                            obj_str = buffer[start_idx:i+1]
+                            try:
+                                obj = json.loads(obj_str)
+                                if "candidates" in obj and obj["candidates"]:
+                                    candidate = obj["candidates"][0]
+                                    if "content" in candidate and "parts" in candidate["content"]:
+                                        text = candidate["content"]["parts"][0].get("text", "")
+                                        if text:
+                                            yield text
+                            except Exception:
+                                pass
+                            buffer = buffer[i+1:]
+                            i = -1
+                            start_idx = -1
+                    i += 1
         except Exception as e:
             yield f"\n[Error: Gemini stream failed - {str(e)}]"
             

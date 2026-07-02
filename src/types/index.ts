@@ -3,6 +3,8 @@ export interface Project {
   name: string;
   description: string | null;
   created_at: string;
+  default_llm_provider: string | null;
+  default_model_name: string | null;
 }
 
 export interface ApiKey {

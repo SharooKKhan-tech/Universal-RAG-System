@@ -13,7 +13,9 @@ def project_to_dict(project: Project):
         "client_id": project.client_id,
         "name": project.name,
         "description": project.description,
-        "created_at": project.created_at
+        "created_at": project.created_at,
+        "default_llm_provider": project.default_llm_provider,
+        "default_model_name": project.default_model_name
     }
 
 

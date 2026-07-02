@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.core.security import verify_api_key, ensure_project_access
 from app.services.monitoring_service import get_project_usage_summary
+from app.api.routes_documents import flexible_auth, check_flexible_project_access
 
 router = APIRouter()
 
@@ -9,8 +9,8 @@ router = APIRouter()
 @router.get("/usage/{project_id}")
 def project_usage_summary(
     project_id: str,
-    api_key_record: dict = Depends(verify_api_key)
+    auth_ctx: dict = Depends(flexible_auth)
 ):
-    ensure_project_access(api_key_record, project_id)
+    check_flexible_project_access(auth_ctx, project_id)
 
     return get_project_usage_summary(project_id)

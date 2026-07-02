@@ -50,7 +50,7 @@ class Settings:
     GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
-    DEFAULT_LLM_PROVIDER: str = os.getenv("DEFAULT_LLM_PROVIDER", "ollama")
-    DEFAULT_MODEL_NAME: str = os.getenv("DEFAULT_MODEL_NAME", "phi3:mini")
+    DEFAULT_LLM_PROVIDER: str = os.getenv("DEFAULT_LLM_PROVIDER", "gemini")
+    DEFAULT_MODEL_NAME: str = os.getenv("DEFAULT_MODEL_NAME", "gemini-2.5-flash")
 
 settings = Settings()

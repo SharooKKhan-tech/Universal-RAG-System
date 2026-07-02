@@ -1,4 +1,5 @@
 import time
+import redis
 from fastapi import HTTPException
 
 from app.core.config import settings
@@ -13,23 +14,32 @@ def check_rate_limit(api_key_record: dict):
 
     rate_key = f"rag:rate_limit:{project_id}:{api_key_id}:{current_minute}"
 
-    current_count = redis_client.incr(rate_key)
+    try:
+        current_count = redis_client.incr(rate_key)
 
-    if current_count == 1:
-        redis_client.expire(rate_key, 70)
+        if current_count == 1:
+            redis_client.expire(rate_key, 70)
 
-    if current_count > settings.RATE_LIMIT_REQUESTS_PER_MINUTE:
-        raise HTTPException(
-            status_code=429,
-            detail={
-                "message": "Rate limit exceeded",
-                "limit_per_minute": settings.RATE_LIMIT_REQUESTS_PER_MINUTE,
-                "project_id": project_id
-            }
-        )
+        if current_count > settings.RATE_LIMIT_REQUESTS_PER_MINUTE:
+            raise HTTPException(
+                status_code=429,
+                detail={
+                    "message": "Rate limit exceeded",
+                    "limit_per_minute": settings.RATE_LIMIT_REQUESTS_PER_MINUTE,
+                    "project_id": project_id
+                }
+            )
 
-    return {
-        "allowed": True,
-        "current_count": current_count,
-        "limit": settings.RATE_LIMIT_REQUESTS_PER_MINUTE
-    }
+        return {
+            "allowed": True,
+            "current_count": current_count,
+            "limit": settings.RATE_LIMIT_REQUESTS_PER_MINUTE
+        }
+    except redis.RedisError:
+        # Graceful fallback: bypass rate limiting if Redis is down
+        return {
+            "allowed": True,
+            "current_count": 0,
+            "limit": settings.RATE_LIMIT_REQUESTS_PER_MINUTE,
+            "redis_error": True
+        }

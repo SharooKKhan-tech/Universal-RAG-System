@@ -85,7 +85,7 @@ def should_rewrite_query(question: str) -> bool:
     return False
 
 
-def rewrite_query(question: str, force: bool = False) -> dict:
+def rewrite_query(question: str, force: bool = False, provider = None) -> dict:
     """
     Returns:
     {
@@ -105,11 +105,14 @@ def rewrite_query(question: str, force: bool = False) -> dict:
     try:
         prompt = build_query_rewrite_prompt(question)
 
-        raw_rewrite = generate_text_with_ollama(
-            prompt=prompt,
-            temperature=0.0,
-            timeout=60
-        )
+        if provider:
+            raw_rewrite = provider.generate(prompt)
+        else:
+            raw_rewrite = generate_text_with_ollama(
+                prompt=prompt,
+                temperature=0.0,
+                timeout=300
+            )
 
         cleaned_rewrite = clean_rewritten_query(raw_rewrite)
 
@@ -135,4 +138,4 @@ def rewrite_query(question: str, force: bool = False) -> dict:
             "original_query": question,
             "rewritten_query": question,
             "was_rewritten": False
-        }
+        }

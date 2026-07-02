@@ -39,7 +39,32 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-def get_current_user(token: Optional[str] = Depends(oauth2_scheme)) -> User:
+def get_user_from_token(token: str) -> "User":
+    """Decode a JWT token and return the corresponding User object. For direct (non-FastAPI-dependency) use."""
+    import jwt as pyjwt
+    from fastapi import HTTPException, status
+    from app.db.models import User
+    from app.db.sync_database import SessionLocal
+
+    try:
+        payload = pyjwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    except pyjwt.PyJWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    with SessionLocal() as db:
+        user = db.get(User, user_id)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        if not user.is_active:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        db.expunge(user)
+        return user
+
+
+def get_current_user(token: Optional[str] = Depends(oauth2_scheme)) -> "User":
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

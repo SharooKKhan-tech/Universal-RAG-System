@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
 from app.db.schemas import ChatRequest
-from app.core.security import verify_api_key, ensure_project_access
+from app.api.routes_documents import flexible_auth, check_flexible_project_access
 from app.services.cache_service import get_cached_answer, set_cached_answer
 from app.services.vector_service import retrieve_chunks
 from app.generation.prompts import build_rag_prompt
@@ -31,6 +31,9 @@ from app.services.chat_service import (
     save_query_record,
 )
 from app.services.monitoring_service import estimate_tokens_from_text, estimate_llm_cost
+from app.db.sync_database import SessionLocal
+from app.db.models import Project
+from app.generation.providers import get_provider
 
 OLLAMA_BASE_URL = "http://localhost:11434"
 OLLAMA_MODEL = "phi3:mini"
@@ -111,6 +114,19 @@ async def _stream_response(
         )
         return
 
+    # Load project configuration
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
+
+    if not project:
+        provider_name = "gemini"
+        model_name = "gemini-2.5-flash"
+    else:
+        provider_name = project.default_llm_provider or "gemini"
+        model_name = project.default_model_name or "gemini-2.5-flash"
+
+    provider = get_provider(provider_name, model_name)
+
     # ── 2. Query rewriting ──────────────────────────────────────────────────
     rewrite_result = {
         "original_query": question,
@@ -118,7 +134,7 @@ async def _stream_response(
         "was_rewritten": False,
     }
     if rewrite_enabled:
-        rewrite_result = rewrite_query(question)
+        rewrite_result = rewrite_query(question, provider=provider)
 
     retrieval_query = rewrite_result["rewritten_query"]
 
@@ -146,7 +162,7 @@ async def _stream_response(
             answer=NO_ANSWER_TEXT,
             sources=[],
             latency_ms=latency_ms,
-            model_name=OLLAMA_MODEL,
+            model_name=model_name,
             status="no_answer",
             confidence="low",
             top_similarity_score=top_similarity_score,
@@ -173,7 +189,7 @@ async def _stream_response(
 
     # ── 6. Stream LLM tokens ────────────────────────────────────────────────
     full_answer = ""
-    for token, done in _stream_ollama(prompt):
+    for token in provider.stream(prompt):
         full_answer += token
         if token:
             yield _sse("token", {"token": token})
@@ -192,7 +208,7 @@ async def _stream_response(
         answer=full_answer,
         sources=sources,
         latency_ms=latency_ms,
-        model_name=OLLAMA_MODEL,
+        model_name=model_name,
         confidence=final_confidence,
         status=final_status,
         top_similarity_score=top_similarity_score,
@@ -226,14 +242,14 @@ async def _stream_response(
 @router.post("/chat/stream")
 async def stream_chat(
     request: ChatRequest,
-    api_key_record: dict = Depends(verify_api_key),
+    auth_ctx: dict = Depends(flexible_auth),
 ):
     """
     SSE streaming chat endpoint.
     Yields ``event: token`` lines as the LLM generates tokens, then a final
     ``event: done`` line with the full payload (sources, confidence, etc.).
     """
-    ensure_project_access(api_key_record, request.project_id)
+    check_flexible_project_access(auth_ctx, request.project_id)
 
     return StreamingResponse(
         _stream_response(

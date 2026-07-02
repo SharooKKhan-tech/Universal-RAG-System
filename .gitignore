@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Database and uploads
+.env
+uploads/
+data/
+vector_db/
+
+# Scratch & diagnostic logs
+all_chroma_entries.txt
+chroma_diagnostics.txt
+diagnostics_output.txt
+openai_e2e_results.txt
+query
+

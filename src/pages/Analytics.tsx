@@ -155,9 +155,19 @@ export const Analytics: React.FC = () => {
     { day: 'Sun', queries: 57 }
   ];
 
-  const displaySummary = summary || demoSummary;
-  const displayDocUsage = documentUsage.length > 0 ? documentUsage : demoDocUsage;
-  const displayHistory = queriesHistory.length > 0 ? queriesHistory : demoHistory;
+  const defaultSummary: AnalyticsSummary = {
+    total_queries: 0,
+    answered_queries: 0,
+    no_answer_queries: 0,
+    answer_rate: 0,
+    average_latency_ms: 0,
+    average_sources: 0,
+    model_distribution: {}
+  };
+
+  const displaySummary = selectedApiKey ? (summary || defaultSummary) : demoSummary;
+  const displayDocUsage = selectedApiKey ? documentUsage : demoDocUsage;
+  const displayHistory = selectedApiKey ? queriesHistory : demoHistory;
 
   const pieData = [
     { name: 'Answered', value: displaySummary.answered_queries, color: '#10b981' },
@@ -328,22 +338,28 @@ export const Analytics: React.FC = () => {
             <CardTitle>Top Source Documents</CardTitle>
             <CardDescription>Most frequently cited documents</CardDescription>
           </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <ReBarChart
-                layout="vertical"
-                data={displayDocUsage}
-                margin={{ top: 5, right: 10, left: 30, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                <XAxis type="number" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <YAxis dataKey="file_name" type="category" stroke="#94a3b8" fontSize={11} tickLine={false} width={100} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px' }}
-                />
-                <Bar dataKey="query_count" fill="#4f46e5" radius={[0, 6, 6, 0]} barSize={12} />
-              </ReBarChart>
-            </ResponsiveContainer>
+          <CardContent className="h-72 flex flex-col justify-center">
+            {displayDocUsage.length === 0 ? (
+              <div className="text-center py-12 text-xs text-slate-400">
+                No documents have been cited in queries yet.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <ReBarChart
+                  layout="vertical"
+                  data={displayDocUsage}
+                  margin={{ top: 5, right: 10, left: 30, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                  <XAxis type="number" stroke="#94a3b8" fontSize={11} tickLine={false} />
+                  <YAxis dataKey="file_name" type="category" stroke="#94a3b8" fontSize={11} tickLine={false} width={100} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px' }}
+                  />
+                  <Bar dataKey="query_count" fill="#4f46e5" radius={[0, 6, 6, 0]} barSize={12} />
+                </ReBarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 

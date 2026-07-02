@@ -119,7 +119,7 @@ def _stream_widget_chat(project_id: str, question: str, top_k: int, retrieval_mo
 
     if not retrieved_results or should_return_no_answer_before_llm(top_similarity_score):
         latency_ms = int((_time.time() - start) * 1000)
-        qr = save_query_record(project_id=project_id, question=question, answer=NO_ANSWER_TEXT, sources=[], latency_ms=latency_ms, model_name="phi3:mini", status="no_answer", confidence="low", top_similarity_score=top_similarity_score)
+        qr = save_query_record(project_id=project_id, question=question, answer=NO_ANSWER_TEXT, sources=[], latency_ms=latency_ms, model_name="gemini-2.5-flash", status="no_answer", confidence="low", top_similarity_score=top_similarity_score)
         yield _sse("token", {"token": NO_ANSWER_TEXT})
         yield _sse("done", {"answer": NO_ANSWER_TEXT, "sources": [], "confidence": "low", "status": "no_answer", "top_similarity_score": top_similarity_score, "latency_ms": latency_ms, "cache_hit": False, "query_id": qr["id"]})
         return
@@ -127,19 +127,27 @@ def _stream_widget_chat(project_id: str, question: str, top_k: int, retrieval_mo
     context = build_context_from_results(retrieved_results)
     prompt = build_rag_prompt(question=question, context=context)
 
-    # Stream from Ollama
+    # Stream from provider
     full_answer = ""
+    # Load project configuration
+    with SessionLocal() as db:
+        project = db.get(Project, project_id)
+
+    if not project:
+        provider_name = "gemini"
+        model_name = "gemini-2.5-flash"
+    else:
+        provider_name = project.default_llm_provider or "gemini"
+        model_name = project.default_model_name or "gemini-2.5-flash"
+
+    from app.generation.providers import get_provider
+    provider = get_provider(provider_name, model_name)
+
     try:
-        with _requests.post("http://localhost:11434/api/generate", json={"model": "phi3:mini", "prompt": prompt, "stream": True, "options": {"temperature": 0.2}}, stream=True, timeout=120) as resp:
-            for line in resp.iter_lines():
-                if line:
-                    chunk = json.loads(line)
-                    token = chunk.get("response", "")
-                    full_answer += token
-                    if token:
-                        yield _sse("token", {"token": token})
-                    if chunk.get("done"):
-                        break
+        for token in provider.stream(prompt):
+            if token:
+                full_answer += token
+                yield _sse("token", {"token": token})
     except Exception as e:
         full_answer = NO_ANSWER_TEXT
         yield _sse("token", {"token": full_answer})
@@ -148,7 +156,7 @@ def _stream_widget_chat(project_id: str, question: str, top_k: int, retrieval_mo
     estimated_tokens = estimate_tokens_from_text(prompt + "\n" + full_answer)
     estimated_cost = estimate_llm_cost(estimated_tokens)
 
-    qr = save_query_record(project_id=project_id, question=question, answer=full_answer, sources=sources, latency_ms=latency_ms, model_name="phi3:mini", confidence=confidence, status="answered", top_similarity_score=top_similarity_score, estimated_tokens=estimated_tokens, estimated_cost=estimated_cost)
+    qr = save_query_record(project_id=project_id, question=question, answer=full_answer, sources=sources, latency_ms=latency_ms, model_name=model_name, confidence=confidence, status="answered", top_similarity_score=top_similarity_score, estimated_tokens=estimated_tokens, estimated_cost=estimated_cost)
 
     payload = {"answer": full_answer, "sources": sources, "confidence": confidence, "status": "answered", "top_similarity_score": top_similarity_score, "latency_ms": latency_ms, "cache_hit": False, "query_id": qr["id"], "estimated_tokens": estimated_tokens, "estimated_cost": estimated_cost}
     set_cached_answer(project_id=project_id, question=question, top_k=top_k, data=payload)

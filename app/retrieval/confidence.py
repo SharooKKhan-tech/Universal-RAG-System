@@ -1,12 +1,12 @@
 NO_ANSWER_TEXT = "I don't have enough information in the uploaded documents to answer this."
 
 # Tuned for Chroma cosine + SentenceTransformer local embeddings
-MIN_SIMILARITY_SCORE = 0.18
+MIN_SIMILARITY_SCORE = 0.15
 MEDIUM_CONFIDENCE_SCORE = 0.35
 HIGH_CONFIDENCE_SCORE = 0.55
 
 # Used to remove weak context chunks before sending to LLM
-MIN_CONTEXT_SCORE = 0.30
+MIN_CONTEXT_SCORE = 0.15
 
 
 def get_top_similarity_score(results: list) -> float | None:

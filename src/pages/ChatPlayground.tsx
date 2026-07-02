@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProject } from '../context/ProjectContext';
 import { 
   Send, 
@@ -39,6 +39,32 @@ export const ChatPlayground: React.FC = () => {
   // UI States
   const [showOptions, setShowOptions] = useState(true);
   const [expandedQueryId, setExpandedQueryId] = useState<string | null>(null);
+
+  // Load messages from localStorage when selectedProject changes
+  useEffect(() => {
+    if (selectedProject) {
+      const saved = localStorage.getItem(`rag_chat_messages_${selectedProject.id}`);
+      setMessages(saved ? JSON.parse(saved) : []);
+    } else {
+      setMessages([]);
+    }
+  }, [selectedProject?.id]);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    if (selectedProject) {
+      // Don't save transient loading messages
+      const persistableMessages = messages.filter(msg => !msg.loading);
+      if (persistableMessages.length > 0) {
+        localStorage.setItem(
+          `rag_chat_messages_${selectedProject.id}`,
+          JSON.stringify(persistableMessages)
+        );
+      } else {
+        localStorage.removeItem(`rag_chat_messages_${selectedProject.id}`);
+      }
+    }
+  }, [messages, selectedProject?.id]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +208,7 @@ export const ChatPlayground: React.FC = () => {
               <div>
                 <h4 className="text-xs font-bold text-slate-700">Ask questions grounded in knowledge</h4>
                 <p className="text-[11px] text-slate-400 font-semibold mt-1">
-                  Type questions below. The Phi-3 LLM will parse your uploaded project documents and retrieve source citations.
+                  Type questions below. Gemini AI will parse your uploaded project documents and retrieve source citations.
                 </p>
               </div>
             </div>
