@@ -143,23 +143,47 @@ def root():
     }
 
 
-def ensure_superadmin_isolated():
+def ensure_superadmin_exists():
     try:
         from app.db.sync_database import SessionLocal
         from app.db.models import User
+        from app.core.auth import get_password_hash
         from sqlalchemy import select
 
+        email = settings.SUPERADMIN_EMAIL
+        password = settings.SUPERADMIN_PASSWORD
+
         with SessionLocal() as db:
-            stmt = select(User).where(User.email == "superadmin@example.com")
+            stmt = select(User).where(User.email == email)
             super_user = db.execute(stmt).scalar_one_or_none()
-            if super_user and super_user.client_id is not None:
-                super_user.client_id = None
+            if not super_user:
+                hashed = get_password_hash(password)
+                new_admin = User(
+                    name="Super Admin",
+                    email=email,
+                    hashed_password=hashed,
+                    role="super_admin",
+                    client_id=None,
+                    is_active=True
+                )
+                db.add(new_admin)
                 db.commit()
-                print("Startup: Isolated superadmin@example.com by setting client_id to None")
+                print(f"Startup: Created new Super Admin user ({email})")
+            else:
+                updated = False
+                if super_user.client_id is not None:
+                    super_user.client_id = None
+                    updated = True
+                if super_user.role != "super_admin":
+                    super_user.role = "super_admin"
+                    updated = True
+                if updated:
+                    db.commit()
+                    print(f"Startup: Verified and updated Super Admin permissions")
     except Exception as e:
-        print(f"Error checking/updating superadmin client isolation on startup: {e}")
+        print(f"Error checking/creating superadmin on startup: {e}")
 
 
 @app.on_event("startup")
 def startup_event():
-    ensure_superadmin_isolated()
+    ensure_superadmin_exists()

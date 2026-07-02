@@ -9,6 +9,9 @@ class Settings:
     PROJECT_NAME: str = "Universal RAG System"
     API_V1_PREFIX: str = "/api/v1"
 
+    SUPERADMIN_EMAIL: str = os.getenv("SUPERADMIN_EMAIL", "superadmin@example.com")
+    SUPERADMIN_PASSWORD: str = os.getenv("SUPERADMIN_PASSWORD", "superadmin123")
+
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
         "postgresql+asyncpg://postgres:root@localhost:5432/universal_rag_db"
