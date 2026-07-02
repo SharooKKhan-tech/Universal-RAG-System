@@ -23,7 +23,8 @@ def get_provider(
         return OpenAIProvider(api_key=key, model_name=model)
         
     elif name == "gemini":
-        key = api_key or settings.GEMINI_API_KEY
+        from app.core.key_rotator import gemini_key_rotator
+        key = api_key or gemini_key_rotator.get_key()
         model = model_name or settings.GEMINI_MODEL
         return GeminiProvider(api_key=key, model_name=model)
         

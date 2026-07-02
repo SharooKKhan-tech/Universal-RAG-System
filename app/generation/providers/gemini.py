@@ -5,11 +5,12 @@ from typing import Iterator
 from fastapi import HTTPException
 
 from app.core.config import settings
+from app.core.key_rotator import gemini_key_rotator
 from app.generation.providers.base import LLMProvider
 
 class GeminiProvider(LLMProvider):
     def __init__(self, api_key: str = None, model_name: str = None):
-        self.api_key = api_key or settings.GEMINI_API_KEY
+        self.api_key = api_key or gemini_key_rotator.get_key()
         self.model_name = model_name or settings.GEMINI_MODEL
 
     def generate(self, prompt: str) -> str:

@@ -3,13 +3,14 @@ import requests
 import time
 from fastapi import HTTPException
 from app.core.config import settings
+from app.core.key_rotator import gemini_key_rotator
 
 class GeminiEmbeddingProvider:
     def __init__(self, model_name: str = "models/gemini-embedding-2"):
         self.model_name = model_name
 
     def _get_api_key(self) -> str:
-        api_key = settings.GEMINI_API_KEY
+        api_key = gemini_key_rotator.get_key()
         if not api_key:
             raise HTTPException(
                 status_code=400,

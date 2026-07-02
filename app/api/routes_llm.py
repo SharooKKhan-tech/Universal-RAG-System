@@ -3,6 +3,7 @@ from sqlalchemy import select
 
 from app.core.auth import get_current_user, check_project_access, require_project_permission
 from app.core.config import settings
+from app.core.key_rotator import gemini_key_rotator
 from app.db.models import Project, LlmProviderConfig, User
 from app.db.schemas import LlmConfigUpdate
 from app.db.sync_database import SessionLocal
@@ -30,7 +31,7 @@ def list_providers(current_user: User = Depends(get_current_user)):
         {
             "name": "gemini",
             "display_name": "Google Gemini",
-            "configured": bool(settings.GEMINI_API_KEY),
+            "configured": gemini_key_rotator.is_configured(),
             "default_model": settings.GEMINI_MODEL
         },
         {
