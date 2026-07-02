@@ -53,4 +53,11 @@ class Settings:
     DEFAULT_LLM_PROVIDER: str = os.getenv("DEFAULT_LLM_PROVIDER", "gemini")
     DEFAULT_MODEL_NAME: str = os.getenv("DEFAULT_MODEL_NAME", "gemini-2.5-flash")
 
+    QDRANT_HOST: str = os.getenv("QDRANT_HOST", "127.0.0.1")
+    QDRANT_PORT: int = int(os.getenv("QDRANT_PORT", "6333"))
+    QDRANT_COLLECTION: str = os.getenv("QDRANT_COLLECTION", "universal_rag_chunks_gemini_3072")
+
+    CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
+
 settings = Settings()

@@ -7,7 +7,7 @@ from app.services.chunk_service import (
     
 )
 from app.embeddings.local_embeddings import embedding_provider
-from app.vectorstores.chroma_store import vector_store
+from app.vectorstores.qdrant_store import vector_store
 from app.retrieval.keyword_search import keyword_search_chunks
 from app.retrieval.hybrid_search import merge_hybrid_results
 from app.retrieval.reranker import rerank_results

@@ -1,10 +1,16 @@
 import json
 import hashlib
 from typing import Any
+from uuid import uuid4
 import redis
 from fastapi import HTTPException
+from qdrant_client.http import models
 
 from app.core.config import settings
+from app.embeddings.local_embeddings import embedding_provider
+from app.vectorstores.qdrant_store import vector_store
+
+SEMANTIC_CACHE_THRESHOLD = 0.82
 
 
 redis_client = redis.Redis(
@@ -40,18 +46,59 @@ def build_chat_cache_key(project_id: str, question: str, top_k: int) -> str:
 
 def get_cached_answer(project_id: str, question: str, top_k: int):
     try:
-        cache_key = build_chat_cache_key(project_id, question, top_k)
+        # 1. Generate embedding for query
+        query_embedding = embedding_provider.embed_query(question)
+        if not query_embedding:
+            return None
 
-        cached_data = redis_client.get(cache_key)
+        # 2. Search for semantically similar cached queries in Qdrant
+        search_results = vector_store.client.query_points(
+            collection_name=vector_store.cache_collection_name,
+            query=query_embedding,
+            query_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="project_id",
+                        match=models.MatchValue(value=project_id)
+                    ),
+                    models.FieldCondition(
+                        key="top_k",
+                        match=models.MatchValue(value=top_k)
+                    )
+                ]
+            ),
+            limit=1
+        )
 
-        if not cached_data:
+        points = search_results.points
+        if not points:
             increment_cache_miss(project_id)
             return None
 
-        increment_cache_hit(project_id)
+        hit = points[0]
+        # Check if similarity meets semantic cache threshold
+        if hit.score >= SEMANTIC_CACHE_THRESHOLD:
+            redis_cache_key = hit.payload.get("redis_cache_key")
+            cached_data = redis_client.get(redis_cache_key)
 
-        return json.loads(cached_data)
-    except redis.RedisError:
+            if cached_data:
+                increment_cache_hit(project_id)
+                print(f"[Semantic Cache HIT] Match: '{hit.payload.get('question')}' with score: {hit.score:.4f}")
+                return json.loads(cached_data)
+            else:
+                # Key expired in Redis; clean up corresponding vector in Qdrant
+                try:
+                    vector_store.client.delete(
+                        collection_name=vector_store.cache_collection_name,
+                        points_selector=models.PointIdsList(points=[hit.id])
+                    )
+                except Exception:
+                    pass
+
+        increment_cache_miss(project_id)
+        return None
+    except Exception as e:
+        print(f"[Semantic Cache Error] Fetch error: {e}")
         return None
 
 
@@ -63,23 +110,63 @@ def set_cached_answer(
     ttl_seconds: int | None = None
 ):
     try:
-        cache_key = build_chat_cache_key(project_id, question, top_k)
+        cache_id = str(uuid4())
+        redis_cache_key = f"rag:chat:{project_id}:semantic:{cache_id}"
 
+        # 1. Store answer payload in Redis with TTL
         redis_client.setex(
-            cache_key,
+            redis_cache_key,
             ttl_seconds or settings.REDIS_CACHE_TTL_SECONDS,
             json.dumps(data, default=str)
         )
 
-        return cache_key
-    except redis.RedisError:
+        # 2. Compute embedding vector
+        query_embedding = embedding_provider.embed_query(question)
+        if query_embedding:
+            # 3. Index vector and payload in Qdrant cache collection
+            vector_store.client.upsert(
+                collection_name=vector_store.cache_collection_name,
+                points=[
+                    models.PointStruct(
+                        id=cache_id,
+                        vector=query_embedding,
+                        payload={
+                            "project_id": project_id,
+                            "redis_cache_key": redis_cache_key,
+                            "question": question,
+                            "top_k": top_k
+                        }
+                    )
+                ]
+            )
+        return redis_cache_key
+    except Exception as e:
+        print(f"[Semantic Cache Error] Set error: {e}")
         return None
 
 
 def delete_project_chat_cache(project_id: str):
     try:
-        pattern = f"rag:chat:{project_id}:*"
+        # 1. Delete matching vectors in Qdrant cache collection
+        try:
+            vector_store.client.delete(
+                collection_name=vector_store.cache_collection_name,
+                points_selector=models.FilterSelector(
+                    filter=models.Filter(
+                        must=[
+                            models.FieldCondition(
+                                key="project_id",
+                                match=models.MatchValue(value=project_id)
+                            )
+                        ]
+                    )
+                )
+            )
+        except Exception as q_err:
+            print(f"[Semantic Cache Qdrant Delete Warning] {q_err}")
 
+        # 2. Scan and delete matching cache keys in Redis
+        pattern = f"rag:chat:{project_id}:*"
         deleted_count = 0
 
         for key in redis_client.scan_iter(match=pattern):

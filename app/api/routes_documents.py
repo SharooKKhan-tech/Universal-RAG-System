@@ -19,6 +19,7 @@ from app.services.background_pipeline_service import (
     upload_document_for_background_processing,
     process_document_in_background
 )
+from app.tasks import process_document_task
 
 router = APIRouter()
 
@@ -125,7 +126,6 @@ def delete_document(
 
 @router.post("/documents/upload-background")
 async def upload_document_background(
-    background_tasks: BackgroundTasks,
     project_id: str = Form(...),
     file: UploadFile = File(...),
     auth_ctx: dict = Depends(flexible_auth)
@@ -135,8 +135,6 @@ async def upload_document_background(
         project_id=project_id,
         file=file
     )
-    background_tasks.add_task(
-        process_document_in_background,
-        result["document_id"]
-    )
+    # Dispatch processing to Celery workers asynchronously
+    process_document_task.delay(result["document_id"])
     return result
